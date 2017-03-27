@@ -7,18 +7,30 @@ Window::Window(const char * _title, int _width, int _height, bool _lockMouse)
 	width = _width;
 	height = _height;
 	
+	InitWindow(_lockMouse);	
+}
 
+Window::Window()
+{
+	title = "Untitled Window";
+	width = 800;
+	height = 600;
+	InitWindow(false);
+}
+
+void Window::InitWindow(bool _lockMouse)
+{
 	SDL_Init(SDL_INIT_EVERYTHING);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
-	if(_lockMouse)
+	if (_lockMouse)
 		SDL_SetRelativeMouseMode(SDL_TRUE); // Lock mouse to window
 
-	SDL_Window* window = SDL_CreateWindow(title, 100, 100, width, height, SDL_WINDOW_OPENGL);
-	SDL_GLContext context = SDL_GL_CreateContext(window);
+	window = SDL_CreateWindow(title, 100, 100, width, height, SDL_WINDOW_OPENGL);
+	context = SDL_GL_CreateContext(window);
 
 	glewExperimental = true;
 	glewInit();
