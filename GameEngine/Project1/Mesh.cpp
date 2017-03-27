@@ -10,13 +10,14 @@
 #include <sstream>
 
 
-Mesh::Mesh(std::vector<Vertex> _vertices, std::vector<GLuint> _indices, std::vector<Texture> _textures, Shader _shader)
+Mesh::Mesh(std::vector<Vertex> _vertices, std::vector<GLuint> _indices, std::vector<Texture> _textures, Shader _shader, FPS_Camera* _camera)
 {
 	vertices = _vertices;
 	indices = _indices;
 	textures = _textures;
 
 	shader = _shader;
+	camera = _camera;
 
 	modelHandle = glGetUniformLocation(shader.GetProgram(), "model"); // Assign modelHandle to uniform value model in shader program
 	viewHandle = glGetUniformLocation(shader.GetProgram(), "view");
@@ -50,10 +51,12 @@ void Mesh::SetupMesh()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
 		(GLvoid*)offsetof(Vertex, pos));
+
 	// Vertex Normals
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
 		(GLvoid*)offsetof(Vertex, normal));
+
 	// Vertex Texture Coords
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
@@ -64,7 +67,7 @@ void Mesh::SetupMesh()
 }
 
 
-void Mesh::Render(glm::mat4 transform, FPS_Camera* cam)
+void Mesh::Render(glm::mat4 transform, glm::vec3 lightPos)
 {
 	// Bind appropriate textures
 	GLuint diffuseNr = 1;
@@ -88,18 +91,18 @@ void Mesh::Render(glm::mat4 transform, FPS_Camera* cam)
 	}
 	
 	glUniformMatrix4fv(modelHandle, 1, GL_FALSE, &transform[0][0]); // Send it to the GLSL file
-	glUniformMatrix4fv(viewHandle, 1, GL_FALSE, &cam->GetViewMatrix()[0][0]); // Send it to the GLSL file
-	glUniformMatrix4fv(projHandle, 1, GL_FALSE, &cam->GetProjMatrix()[0][0]); // Send it to the GLSL file
+	glUniformMatrix4fv(viewHandle, 1, GL_FALSE, &camera->GetViewMatrix()[0][0]); // Send it to the GLSL file
+	glUniformMatrix4fv(projHandle, 1, GL_FALSE, &camera->GetProjMatrix()[0][0]); // Send it to the GLSL file
 
 
 	glUniform3f(glGetUniformLocation(shader.GetProgram(), "diffuse_color"), 1.0f, 1.0f, 1.0f);
 	glUniform3f(glGetUniformLocation(shader.GetProgram(), "specular_color"), 1.0f, 0.5f, 0.0f);
-	glUniform3f(glGetUniformLocation(shader.GetProgram(), "light_position"), 0.0f, 0.0f, 10.0f);
+	glUniform3f(glGetUniformLocation(shader.GetProgram(), "light_position"), lightPos.x, lightPos.y, lightPos.z);
 
-	glUniform3f(glGetUniformLocation(shader.GetProgram(), "vEyeSpaceCameraPosition"), cam->GetPosition().x, cam->GetPosition().y, cam->GetPosition().z);
+	glUniform3f(glGetUniformLocation(shader.GetProgram(), "vEyeSpaceCameraPosition"), camera->GetPosition().x, camera->GetPosition().y, camera->GetPosition().z);
 	
-	glm::mat3 MV = cam->GetViewMatrix() * transform;
-	glUniformMatrix3fv(glGetUniformLocation(shader.GetProgram(), "lightNormal"), 1, GL_FALSE, glm::value_ptr(glm::inverse(MV)));
+	glm::mat3 MV = transform * camera->GetViewMatrix();
+	glUniformMatrix3fv(glGetUniformLocation(shader.GetProgram(), "lightNormal"), 1, GL_FALSE, glm::value_ptr(glm::inverseTranspose(MV)));
 	
 	// Draw mesh
 	glBindVertexArray(VAO);

@@ -1,10 +1,11 @@
 #include "Model.h"
 #include "SOIL.h"
 #include "Vertex.h"
+#include "FPS_Camera.h"
 #include <ctime>
 
 
-Model::Model(GLchar * path, Shader _shader, FPS_Camera* _cam)
+Model::Model(char * path, Shader _shader, FPS_Camera* _cam)
 {
 	camera = _cam;
 	shader = _shader;
@@ -17,15 +18,14 @@ Model::~Model()
 {
 }
 
-void Model::Render()
+void Model::Render(glm::vec3 lightPos)
 {
 	for (GLuint i = 0; i < meshes.size(); i++)
 	{
 		shader.Use();
-		meshes[i].Render(transform, camera);
+		meshes[i].Render(transform, lightPos);
 	}
 }
-
 
 
 void Model::LoadModel(std::string path)
@@ -141,7 +141,7 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	seconds = difftime(end, begin);
 	printf("%.0f seconds to process mesh.\n", seconds);
 	// Return a mesh object created from the extracted mesh data
-	return Mesh(vertices, indices, textures, shader);
+	return Mesh(vertices, indices, textures, shader, camera);
 }
 
 

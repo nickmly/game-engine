@@ -31,8 +31,9 @@ public:
 	std::vector<Texture> textures;
 	GLuint VAO, VBO, EBO;
 	GLuint modelHandle, viewHandle, projHandle;
-	void Render(glm::mat4 transform, FPS_Camera* cam);
-	Mesh(std::vector<Vertex> _vertices, std::vector<unsigned int> _indices, std::vector<Texture> _textures, Shader _shader);
+	FPS_Camera* camera;
+	void Render(glm::mat4 transform, glm::vec3 lightPos);
+	Mesh(std::vector<Vertex> _vertices, std::vector<unsigned int> _indices, std::vector<Texture> _textures, Shader _shader, FPS_Camera* _camera);
 
 
 	~Mesh();

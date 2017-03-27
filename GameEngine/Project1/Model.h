@@ -33,7 +33,7 @@ public:
 	std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
 	GLint TextureFromFile(const char* path, std::string directory);
 
-	void Render();
+	void Render(glm::vec3 lightPos);
 	Model(char* path, Shader _shader, FPS_Camera* _cam);
 	~Model();
 };

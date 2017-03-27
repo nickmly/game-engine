@@ -82,8 +82,6 @@ void renderText(char* text)
 	SDL_FreeSurface(surf);
 }
 
-
-
 int main(int argc, char** argv) 
 {		
 	window = new Window(TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, false);
@@ -98,30 +96,47 @@ int main(int argc, char** argv)
 	Shader modelShader = Shader(FileReader::ReadFromFile("Shaders/model_shader.vert").c_str(), FileReader::ReadFromFile("Shaders/model_shader.frag").c_str());
 	model = new Model("Models/skull.obj", modelShader, fpsCamera);
 
-	model->transform = glm::translate(model->transform, glm::vec3(5.0f, 5.0f, 0.0f));
+	model->transform = glm::translate(model->transform, glm::vec3(2.5f, 2.5f, 0.0f));
 	renderer.Enable();
-	double i = 0.0;
-	while (i < 10.0)
+
+	SDL_Event windowEvent;
+	float mouseX = 0.0f;
+	float mouseY = 0.0f;
+	while (true)
 	{
 		clock.Tick();
-		
+
+		// Input handling
+		if (SDL_PollEvent(&windowEvent))
+		{
+			if (windowEvent.type == SDL_QUIT)
+				break;
+			if (windowEvent.type == SDL_KEYDOWN)
+			{
+				if (windowEvent.key.keysym.sym == SDLK_ESCAPE)
+					break;
+			}
+			if (windowEvent.type == SDL_MOUSEMOTION)
+			{
+				mouseX = windowEvent.motion.x;
+				mouseY = windowEvent.motion.y;
+			}			
+		}
+
+
 		// Game loop
 		renderer.PreRender();
 		renderer.Render();
 
 		fpsCamera->Update();
-		model->Render();
+		model->Render(glm::vec3(mouseX, mouseY, -20.0f));
 		model->transform = glm::rotate(
 			model->transform,
 			(float)clock.GetDeltaTime()/2.0f,
 			glm::vec3(0.0f, 1.0f, 0.0f));
 
 		renderer.PostRender();
-
-
-		//renderText("Hello World!");
 		
-		i += clock.GetDeltaTime();		
 		window->Refresh();
 	}
 
