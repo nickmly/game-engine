@@ -23,6 +23,7 @@
     <ClInclude Include="Clock.h" />
     <ClInclude Include="FileReader.h" />
     <ClInclude Include="FPS_Camera.h" />
+    <ClInclude Include="InputManager.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="OpenGLRenderer.h" />
@@ -36,6 +37,7 @@
     <ClCompile Include="AbstractCamera.cpp" />
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="FPS_Camera.cpp" />
+    <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="OpenGLRenderer.cpp" />

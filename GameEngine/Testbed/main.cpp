@@ -9,6 +9,7 @@
 #include <glm.hpp>
 
 // Engine
+#include "InputManager.h"
 #include "OpenGLRenderer.h"
 #include "Clock.h"
 #include "Model.h"
@@ -82,9 +83,12 @@ void renderText(char* text)
 	SDL_FreeSurface(surf);
 }
 
+InputManager* inputManager = InputManager::GetInstance();
 int main(int argc, char** argv) 
 {		
-	window = new Window(TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, false);
+	window = new Window(TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, true);
+
+	glm::vec3 camRotation = glm::vec3(0.0f);
 
 	Model* model;
 	OpenGLRenderer renderer;
@@ -95,8 +99,7 @@ int main(int argc, char** argv)
 
 	Shader modelShader = Shader(FileReader::ReadFromFile("Shaders/model_shader.vert").c_str(), FileReader::ReadFromFile("Shaders/model_shader.frag").c_str());
 	model = new Model("Models/skull.obj", modelShader, fpsCamera);
-
-	model->transform = glm::translate(model->transform, glm::vec3(2.5f, 2.5f, 0.0f));
+	
 	renderer.Enable();
 
 	SDL_Event windowEvent;
@@ -115,29 +118,50 @@ int main(int argc, char** argv)
 			{
 				if (windowEvent.key.keysym.sym == SDLK_ESCAPE)
 					break;
+			
 			}
 			if (windowEvent.type == SDL_MOUSEMOTION)
 			{
 				mouseX = windowEvent.motion.x;
 				mouseY = windowEvent.motion.y;
+
+				camRotation.x += (windowEvent.motion.xrel * 40.0f * clock.GetDeltaTime()) * -1.0f;
+				camRotation.y += windowEvent.motion.yrel * 40.0f * clock.GetDeltaTime();
 			}			
 		}
-
+		//
 
 		// Game loop
 		renderer.PreRender();
 		renderer.Render();
 
 		fpsCamera->Update();
-		model->Render(glm::vec3(mouseX, mouseY, -20.0f));
+		fpsCamera->Rotate(camRotation.x, camRotation.y, camRotation.z);
+		model->Render(glm::vec3(0.0f, 0.0f, -20.0f));
 		model->transform = glm::rotate(
 			model->transform,
 			(float)clock.GetDeltaTime()/2.0f,
 			glm::vec3(0.0f, 1.0f, 0.0f));
-
-		renderer.PostRender();
 		
+
+		if (inputManager->IsKeyDown(SDLK_w)) {
+			fpsCamera->Walk(clock.GetDeltaTime() * 50.0f);
+		}
+		else if (inputManager->IsKeyDown(SDLK_s)) {
+			fpsCamera->Walk(-(clock.GetDeltaTime() * 50.0f));
+		}
+
+		if (inputManager->IsKeyDown(SDLK_a)) {
+			fpsCamera->Strafe(-clock.GetDeltaTime() * 50.0f);
+		}
+		else if (inputManager->IsKeyDown(SDLK_d)) {
+			fpsCamera->Strafe(clock.GetDeltaTime() * 50.0f);
+		}
+		renderer.PostRender();
+		//
+
 		window->Refresh();
+		
 	}
 
 	quitGame();

@@ -102,7 +102,7 @@ void Mesh::Render(glm::mat4 transform, glm::vec3 lightPos)
 	glUniform3f(glGetUniformLocation(shader.GetProgram(), "vEyeSpaceCameraPosition"), camera->GetPosition().x, camera->GetPosition().y, camera->GetPosition().z);
 	
 	glm::mat3 MV = transform * camera->GetViewMatrix();
-	glUniformMatrix3fv(glGetUniformLocation(shader.GetProgram(), "lightNormal"), 1, GL_FALSE, glm::value_ptr(glm::inverseTranspose(MV)));
+	glUniformMatrix3fv(glGetUniformLocation(shader.GetProgram(), "lightNormal"), 1, GL_FALSE, glm::value_ptr(glm::inverse(MV)));
 	
 	// Draw mesh
 	glBindVertexArray(VAO);
