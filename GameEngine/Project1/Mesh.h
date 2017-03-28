@@ -2,16 +2,15 @@
 #include <string>
 #include <vector>
 #include <glm.hpp>
+#include <GL/glew.h>
 
 #include "Shader.h"
-#include "GL\glew.h"
+#include "Transform.h"
 #include "scene.h"
 
 class Vertex;
 
 class FPS_Camera;
-
-
 
 struct Texture
 {
@@ -32,9 +31,8 @@ public:
 	GLuint VAO, VBO, EBO;
 	GLuint modelHandle, viewHandle, projHandle;
 	FPS_Camera* camera;
-	void Render(glm::mat4 transform, glm::vec3 lightPos);
+	void Render(Transform transform, glm::vec3 lightPos);
 	Mesh(std::vector<Vertex> _vertices, std::vector<unsigned int> _indices, std::vector<Texture> _textures, Shader _shader, FPS_Camera* _camera);
-
 
 	~Mesh();
 };

@@ -9,7 +9,6 @@ Model::Model(char * path, Shader _shader, FPS_Camera* _cam)
 {
 	camera = _cam;
 	shader = _shader;
-	transform = glm::mat4(1.0f);
 	LoadModel(path);
 }
 

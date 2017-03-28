@@ -20,7 +20,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractCamera.h" />
+    <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="Clock.h" />
+    <ClInclude Include="Collider.h" />
     <ClInclude Include="FileReader.h" />
     <ClInclude Include="FPS_Camera.h" />
     <ClInclude Include="InputManager.h" />
@@ -29,20 +31,26 @@
     <ClInclude Include="OpenGLRenderer.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="GameScene.h" />
+    <ClInclude Include="Rigidbody.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Transform.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AbstractCamera.cpp" />
+    <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="Clock.cpp" />
+    <ClCompile Include="Collider.cpp" />
     <ClCompile Include="FPS_Camera.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="OpenGLRenderer.cpp" />
     <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="Rigidbody.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

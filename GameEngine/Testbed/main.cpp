@@ -16,6 +16,7 @@
 #include "FileReader.h"
 #include "FPS_Camera.h"
 #include "Window.h"
+#include "BoxCollider.h"
 
 
 const char* TITLE = "Window Title";
@@ -89,8 +90,11 @@ int main(int argc, char** argv)
 	window = new Window(TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, true);
 
 	glm::vec3 camRotation = glm::vec3(0.0f);
+	glm::vec3 lightPos = glm::vec3(0.0f, 0.0f, -20.0f);
 
 	Model* model;
+	Model* cube;
+
 	OpenGLRenderer renderer;
 	Clock clock;
 	FPS_Camera* fpsCamera = new FPS_Camera();
@@ -99,12 +103,22 @@ int main(int argc, char** argv)
 
 	Shader modelShader = Shader(FileReader::ReadFromFile("Shaders/model_shader.vert").c_str(), FileReader::ReadFromFile("Shaders/model_shader.frag").c_str());
 	model = new Model("Models/skull.obj", modelShader, fpsCamera);
+	cube = new Model("Models/cube.obj", modelShader, fpsCamera);
 	
+	
+	cube->transform.Translate(glm::vec3(5.0f, 0.0f, 0.0f));
+
+	BoxCollider* skullCol = new BoxCollider(model->transform.position, model->transform.scale);
+	
+	BoxCollider* cubeCol = new BoxCollider(cube->transform.position, cube->transform.scale);
+
+
 	renderer.Enable();
 
 	SDL_Event windowEvent;
 	float mouseX = 0.0f;
 	float mouseY = 0.0f;
+
 	while (true)
 	{
 		clock.Tick();
@@ -117,8 +131,7 @@ int main(int argc, char** argv)
 			if (windowEvent.type == SDL_KEYDOWN)
 			{
 				if (windowEvent.key.keysym.sym == SDLK_ESCAPE)
-					break;
-			
+					break;			
 			}
 			if (windowEvent.type == SDL_MOUSEMOTION)
 			{
@@ -137,13 +150,24 @@ int main(int argc, char** argv)
 
 		fpsCamera->Update();
 		fpsCamera->Rotate(camRotation.x, camRotation.y, camRotation.z);
-		model->Render(glm::vec3(0.0f, 0.0f, -20.0f));
-		model->transform = glm::rotate(
-			model->transform,
-			(float)clock.GetDeltaTime()/2.0f,
-			glm::vec3(0.0f, 1.0f, 0.0f));
-		
 
+		model->Render(lightPos);
+		model->transform.Rotate(glm::vec3(0.0f, clock.GetDeltaTime(), 0.0f));
+		skullCol->UpdatePosition(model->transform.position);
+
+		cube->transform.Translate(glm::vec3(-clock.GetDeltaTime(), 0.0f, 0.0f));
+		cube->Render(lightPos);
+		cubeCol->UpdatePosition(cube->transform.position);
+
+		if (skullCol->IsIntersectingBox(*cubeCol)) {
+			std::cout << "Collision!" << std::endl;
+		}
+		else
+		{
+			std::cout << "No Collision!" << std::endl;
+		}
+				
+		//skullCol.Draw(model->transform, fpsCamera);
 		if (inputManager->IsKeyDown(SDLK_w)) {
 			fpsCamera->Walk(clock.GetDeltaTime() * 50.0f);
 		}
@@ -157,6 +181,8 @@ int main(int argc, char** argv)
 		else if (inputManager->IsKeyDown(SDLK_d)) {
 			fpsCamera->Strafe(clock.GetDeltaTime() * 50.0f);
 		}
+
+
 		renderer.PostRender();
 		//
 

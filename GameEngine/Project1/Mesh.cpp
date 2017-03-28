@@ -67,7 +67,7 @@ void Mesh::SetupMesh()
 }
 
 
-void Mesh::Render(glm::mat4 transform, glm::vec3 lightPos)
+void Mesh::Render(Transform transform, glm::vec3 lightPos)
 {
 	// Bind appropriate textures
 	GLuint diffuseNr = 1;
@@ -90,7 +90,7 @@ void Mesh::Render(glm::mat4 transform, glm::vec3 lightPos)
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
 	
-	glUniformMatrix4fv(modelHandle, 1, GL_FALSE, &transform[0][0]); // Send it to the GLSL file
+	glUniformMatrix4fv(modelHandle, 1, GL_FALSE, &transform.GetMatrix()[0][0]); // Send it to the GLSL file
 	glUniformMatrix4fv(viewHandle, 1, GL_FALSE, &camera->GetViewMatrix()[0][0]); // Send it to the GLSL file
 	glUniformMatrix4fv(projHandle, 1, GL_FALSE, &camera->GetProjMatrix()[0][0]); // Send it to the GLSL file
 
@@ -101,7 +101,7 @@ void Mesh::Render(glm::mat4 transform, glm::vec3 lightPos)
 
 	glUniform3f(glGetUniformLocation(shader.GetProgram(), "vEyeSpaceCameraPosition"), camera->GetPosition().x, camera->GetPosition().y, camera->GetPosition().z);
 	
-	glm::mat3 MV = transform * camera->GetViewMatrix();
+	glm::mat3 MV = transform.GetMatrix() * camera->GetViewMatrix();
 	glUniformMatrix3fv(glGetUniformLocation(shader.GetProgram(), "lightNormal"), 1, GL_FALSE, glm::value_ptr(glm::inverse(MV)));
 	
 	// Draw mesh

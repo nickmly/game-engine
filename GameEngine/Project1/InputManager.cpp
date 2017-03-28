@@ -15,7 +15,7 @@ bool InputManager::IsKeyDown(SDL_Keycode key)
 	const Uint8* state = SDL_GetKeyboardState(NULL);
 	if (state[SDL_GetScancodeFromKey(key)])
 	{
-		printf("key pressed: %s\n", SDL_GetKeyName(key));
+		//printf("key pressed: %s\n", SDL_GetKeyName(key));
 		return true;
 	}
 	return false;

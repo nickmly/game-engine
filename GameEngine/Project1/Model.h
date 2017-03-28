@@ -8,6 +8,7 @@
 // Engine
 #include "Mesh.h"
 #include "Shader.h"
+#include "Transform.h"
 
 // ASSIMP
 #include "Importer.hpp"
@@ -26,7 +27,7 @@ private:
 	std::string directory;
 	FPS_Camera* camera;
 public:
-	glm::mat4 transform;
+	Transform transform;
 	void LoadModel(std::string path);
 	void ProcessNode(aiNode* node, const aiScene* scene);
 	Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
