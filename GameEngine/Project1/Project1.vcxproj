@@ -23,8 +23,10 @@
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="Collider.h" />
+    <ClInclude Include="Component.h" />
     <ClInclude Include="FileReader.h" />
     <ClInclude Include="FPS_Camera.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
@@ -42,7 +44,9 @@
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="Collider.cpp" />
+    <ClCompile Include="Component.cpp" />
     <ClCompile Include="FPS_Camera.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />

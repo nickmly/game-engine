@@ -5,6 +5,12 @@
 
 #include <vector>
 
+BoxCollider::BoxCollider(Transform * _transform)
+{
+	transform = _transform;
+	name = "BoxCollider";
+}
+
 BoxCollider::~BoxCollider()
 {
 }
@@ -28,9 +34,11 @@ void BoxCollider::UpdateBounds(float _minX, float _minY, float _minZ, float _max
 	maxZ = _maxZ;
 }
 
-void BoxCollider::UpdatePosition(glm::vec3 _pos)
+void BoxCollider::Update(float deltaTime)
 {
-	center = _pos;
+	center = transform->position;
+	scale = transform->scale;
+
 	minX = center.x - (scale.x);
 	maxX = center.x + (scale.x);
 
@@ -116,3 +124,4 @@ bool BoxCollider::IsColliding(Collider collider)
 {
 	return false;
 }
+

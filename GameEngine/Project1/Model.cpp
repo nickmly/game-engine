@@ -10,6 +10,7 @@ Model::Model(char * path, Shader _shader, FPS_Camera* _cam)
 	camera = _cam;
 	shader = _shader;
 	LoadModel(path);
+	name = "Model";
 }
 
 
@@ -26,6 +27,9 @@ void Model::Render(glm::vec3 lightPos)
 	}
 }
 
+void Model::Update(float deltaTime)
+{
+}
 
 void Model::LoadModel(std::string path)
 {

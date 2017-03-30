@@ -9,6 +9,7 @@
 #include <glm.hpp>
 
 // Engine
+#include "GameObject.h"
 #include "InputManager.h"
 #include "OpenGLRenderer.h"
 #include "Clock.h"
@@ -17,6 +18,7 @@
 #include "FPS_Camera.h"
 #include "Window.h"
 #include "BoxCollider.h"
+#include "Rigidbody.h"
 
 
 const char* TITLE = "Window Title";
@@ -92,8 +94,7 @@ int main(int argc, char** argv)
 	glm::vec3 camRotation = glm::vec3(0.0f);
 	glm::vec3 lightPos = glm::vec3(0.0f, 0.0f, -20.0f);
 
-	Model* model;
-	Model* cube;
+	
 
 	OpenGLRenderer renderer;
 	Clock clock;
@@ -102,15 +103,27 @@ int main(int argc, char** argv)
 	fpsCamera->SetPosition(glm::vec3(0.0f, 0.0f, -20.0f));	
 
 	Shader modelShader = Shader(FileReader::ReadFromFile("Shaders/model_shader.vert").c_str(), FileReader::ReadFromFile("Shaders/model_shader.frag").c_str());
-	model = new Model("Models/skull.obj", modelShader, fpsCamera);
-	cube = new Model("Models/cube.obj", modelShader, fpsCamera);
-	
-	
-	cube->transform.Translate(glm::vec3(5.0f, 0.0f, 0.0f));
 
-	BoxCollider* skullCol = new BoxCollider(model->transform.position, model->transform.scale);
+	GameObject* skull = new GameObject();
+	GameObject* cube = new GameObject();
+
+	skull->AddComponent(new Model("Models/skull.obj", modelShader, fpsCamera));
+	Model* model = skull->GetComponent<Model>();
+	skull->AddComponent(new BoxCollider(&model->transform));
+	BoxCollider* skullCol = skull->GetComponent<BoxCollider>();
 	
-	BoxCollider* cubeCol = new BoxCollider(cube->transform.position, cube->transform.scale);
+	cube->AddComponent(new Model("Models/cube.obj", modelShader, fpsCamera));
+	Model* cubeModel = cube->GetComponent<Model>();		
+
+	cube->AddComponent(new Rigidbody(&cubeModel->transform));
+	Rigidbody* cubeRb = cube->GetComponent<Rigidbody>();
+	cubeRb->velocity = glm::vec3(-0.01f, 0.0f, 0.0f);
+
+	cube->AddComponent(new BoxCollider(&cubeModel->transform));
+	BoxCollider* cubeCol = cube->GetComponent<BoxCollider>();
+
+
+	cubeModel->transform.Translate(glm::vec3(5.0f, 0.0f, 0.0f));
 
 
 	renderer.Enable();
@@ -153,20 +166,21 @@ int main(int argc, char** argv)
 
 		model->Render(lightPos);
 		model->transform.Rotate(glm::vec3(0.0f, clock.GetDeltaTime(), 0.0f));
-		skullCol->UpdatePosition(model->transform.position);
 
-		cube->transform.Translate(glm::vec3(-clock.GetDeltaTime(), 0.0f, 0.0f));
-		cube->Render(lightPos);
-		cubeCol->UpdatePosition(cube->transform.position);
-
-		if (skullCol->IsIntersectingBox(*cubeCol)) {
-			std::cout << "Collision!" << std::endl;
+		cubeModel->Render(lightPos);
+		if (cubeCol->IsIntersectingBox(*skullCol))
+		{
+			//std::cout << "Colliding" << std::endl;
+			//cubeRb->initialVelocity.x = -cubeRb->initialVelocity.x;
 		}
 		else
 		{
-			std::cout << "No Collision!" << std::endl;
+			//std::cout << "Not colliding" << std::endl;
 		}
-				
+		
+		skull->Update((float)clock.GetDeltaTime());
+		cube->Update((float)clock.GetDeltaTime());
+
 		//skullCol.Draw(model->transform, fpsCamera);
 		if (inputManager->IsKeyDown(SDLK_w)) {
 			fpsCamera->Walk(clock.GetDeltaTime() * 50.0f);

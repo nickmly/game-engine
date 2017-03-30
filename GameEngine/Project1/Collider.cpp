@@ -13,3 +13,7 @@ bool Collider::IsColliding(Collider otherCollider)
 {
 	return false;
 }
+
+void Collider::Update(float deltaTime)
+{
+}
