@@ -22,31 +22,20 @@ void BoxCollider::InitGL()
 	projHandle = glGetUniformLocation(shader.GetProgram(), "projection");
 }
 
-void BoxCollider::UpdateBounds(float _minX, float _minY, float _minZ, float _maxX, float _maxY, float _maxZ)
-{
-	minX = _minX;
-	maxX = _maxX;
-
-	minY = _minY;
-	maxY = _maxY;
-
-	minZ = _minZ;
-	maxZ = _maxZ;
-}
 
 void BoxCollider::Update(float deltaTime)
 {
 	center = transform->position;
 	scale = transform->scale;
 
-	minX = center.x - (scale.x);
-	maxX = center.x + (scale.x);
-
-	minY = center.y - (scale.y);
-	maxY = center.y + (scale.y);
-
-	minZ = center.z - (scale.z);
-	maxZ = center.z + (scale.z);
+	minX = center.x - (scale.x/2);
+	maxX = center.x + (scale.x/2);
+							  
+	minY = center.y - (scale.y/2);
+	maxY = center.y + (scale.y/2);
+							  
+	minZ = center.z - (scale.z/2);
+	maxZ = center.z + (scale.z/2);
 }
 
 bool BoxCollider::IsIntersectingBox(const BoxCollider &otherBox)
@@ -59,7 +48,7 @@ bool BoxCollider::IsIntersectingBox(const BoxCollider &otherBox)
 	return false;
 }
 
-void BoxCollider::Draw(Transform transform, FPS_Camera* cam)
+void BoxCollider::Draw(FPS_Camera* cam)
 {
 	Shader shader = Shader(FileReader::ReadFromFile("Shaders/model_shader_basic.vert").c_str(), FileReader::ReadFromFile("Shaders/model_shader_basic.frag").c_str());
 	std::vector<glm::vec3> verts, color;
@@ -109,11 +98,9 @@ void BoxCollider::Draw(Transform transform, FPS_Camera* cam)
 
 	shader.Use();
 
-	glUniformMatrix4fv(modelHandle, 1, GL_FALSE, &transform.GetMatrix()[0][0]); // Send it to the GLSL file
+	glUniformMatrix4fv(modelHandle, 1, GL_FALSE, &transform->GetMatrix()[0][0]); // Send it to the GLSL file
 	glUniformMatrix4fv(viewHandle, 1, GL_FALSE, &cam->GetViewMatrix()[0][0]); // Send it to the GLSL file
 	glUniformMatrix4fv(projHandle, 1, GL_FALSE, &cam->GetProjMatrix()[0][0]); // Send it to the GLSL file
-	//renderer->SetProgram(shader.GetProgram());
-	//renderer->RenderTransform(transform);
 
 	glDrawArrays(GL_LINE_STRIP, 0, verts.size());
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

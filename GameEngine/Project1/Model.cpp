@@ -5,8 +5,9 @@
 #include <ctime>
 
 
-Model::Model(char * path, Shader _shader, FPS_Camera* _cam)
+Model::Model(char * path, Shader _shader, FPS_Camera* _cam, Transform *_transform)
 {
+	transform = _transform;
 	camera = _cam;
 	shader = _shader;
 	LoadModel(path);
@@ -23,7 +24,7 @@ void Model::Render(glm::vec3 lightPos)
 	for (GLuint i = 0; i < meshes.size(); i++)
 	{
 		shader.Use();
-		meshes[i].Render(transform, lightPos);
+		meshes[i].Render(*transform, lightPos);
 	}
 }
 

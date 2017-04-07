@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "Transform.h"
 
 #include <vector>
 #include <memory>
@@ -10,6 +11,8 @@ class GameObject
 private:
 	std::vector<Component*> components;
 public:
+	Transform *transform;
+
 	void AddComponent(Component* c)
 	{
 		components.push_back(c);
@@ -35,7 +38,9 @@ public:
 			components.at(i)->Update(deltaTime);
 		}
 	};
-	GameObject() {};
+	GameObject() {
+		transform = new Transform();
+	};
 	~GameObject() {};
 };
 

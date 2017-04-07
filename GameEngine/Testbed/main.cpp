@@ -105,25 +105,33 @@ int main(int argc, char** argv)
 	Shader modelShader = Shader(FileReader::ReadFromFile("Shaders/model_shader.vert").c_str(), FileReader::ReadFromFile("Shaders/model_shader.frag").c_str());
 
 	GameObject* skull = new GameObject();
-	GameObject* cube = new GameObject();
+	skull->transform->SetPosition(glm::vec3(0.0, 0.0f, 0.0f));
 
-	skull->AddComponent(new Model("Models/skull.obj", modelShader, fpsCamera));
+	GameObject* cube = new GameObject();
+	cube->transform->SetPosition(glm::vec3(-3.0f, 0.0f, 0.0f));
+
+	skull->AddComponent(new Model("Models/skull.obj", modelShader, fpsCamera, skull->transform));
 	Model* model = skull->GetComponent<Model>();
-	skull->AddComponent(new BoxCollider(&model->transform));
+
+//	model->transform->Scale(glm::vec3(0.00004f));
+
+	skull->AddComponent(new BoxCollider(skull->transform));
 	BoxCollider* skullCol = skull->GetComponent<BoxCollider>();
 	
-	cube->AddComponent(new Model("Models/cube.obj", modelShader, fpsCamera));
+	cube->AddComponent(new Model("Models/cube.obj", modelShader, fpsCamera, cube->transform));
 	Model* cubeModel = cube->GetComponent<Model>();		
 
-	cube->AddComponent(new Rigidbody(&cubeModel->transform));
-	Rigidbody* cubeRb = cube->GetComponent<Rigidbody>();
-	cubeRb->velocity = glm::vec3(-0.01f, 0.0f, 0.0f);
+	//cubeModel->transform->SetPosition(glm::vec3(0.02f, 0.0f, 0.0f));
+	//cubeModel->transform->Scale(glm::vec3(0.1));
 
-	cube->AddComponent(new BoxCollider(&cubeModel->transform));
+	cube->AddComponent(new Rigidbody(cube->transform));
+	Rigidbody* cubeRb = cube->GetComponent<Rigidbody>();
+	cubeRb->velocity = glm::vec3(0.05f, 0.0f, 0.0f);
+
+	cube->AddComponent(new BoxCollider(cube->transform));
 	BoxCollider* cubeCol = cube->GetComponent<BoxCollider>();
 
 
-	cubeModel->transform.Translate(glm::vec3(5.0f, 0.0f, 0.0f));
 
 
 	renderer.Enable();
@@ -135,6 +143,8 @@ int main(int argc, char** argv)
 	while (true)
 	{
 		clock.Tick();
+	
+
 
 		// Input handling
 		if (SDL_PollEvent(&windowEvent))
@@ -151,8 +161,8 @@ int main(int argc, char** argv)
 				mouseX = windowEvent.motion.x;
 				mouseY = windowEvent.motion.y;
 
-				camRotation.x += (windowEvent.motion.xrel * 40.0f * clock.GetDeltaTime()) * -1.0f;
-				camRotation.y += windowEvent.motion.yrel * 40.0f * clock.GetDeltaTime();
+				camRotation.x += (windowEvent.motion.xrel * 4.0f * clock.GetDeltaTime()) * -1.0f;
+				camRotation.y += windowEvent.motion.yrel * 4.0f * clock.GetDeltaTime();
 			}			
 		}
 		//
@@ -165,23 +175,34 @@ int main(int argc, char** argv)
 		fpsCamera->Rotate(camRotation.x, camRotation.y, camRotation.z);
 
 		model->Render(lightPos);
-		model->transform.Rotate(glm::vec3(0.0f, clock.GetDeltaTime(), 0.0f));
+		//model->transform->Rotate(glm::vec3(0.0f, clock.GetDeltaTime(), 0.0f));
 
 		cubeModel->Render(lightPos);
+
+
+	//	std::cout << "cubeObject  : " << cube->transform->position.x << std::endl;
+		//std::cout << "cubeCollider: " << cubeCol->transform->position.x << std::endl;
+		//std::cout << "cubeModel   : " << cubeModel->transform->position.x << std::endl;
+		//std::cout << "CubeRB      : "<< cubeRb->transform->position.x << std::endl;
+		//std::cout << "cube: " << cube->transform->position.x << std::endl;
+		
 		if (cubeCol->IsIntersectingBox(*skullCol))
 		{
-			//std::cout << "Colliding" << std::endl;
+			std::cout << "Colliding" << std::endl;
+
 			//cubeRb->initialVelocity.x = -cubeRb->initialVelocity.x;
 		}
 		else
 		{
-			//std::cout << "Not colliding" << std::endl;
+			std::cout << "Not colliding" << std::endl;
 		}
-		
-		skull->Update((float)clock.GetDeltaTime());
+		//
+
+
+		//cubeRb->Update(clock.GetDeltaTime());
+		//skull->Update((float)clock.GetDeltaTime());
 		cube->Update((float)clock.GetDeltaTime());
 
-		//skullCol.Draw(model->transform, fpsCamera);
 		if (inputManager->IsKeyDown(SDLK_w)) {
 			fpsCamera->Walk(clock.GetDeltaTime() * 50.0f);
 		}
@@ -194,6 +215,10 @@ int main(int argc, char** argv)
 		}
 		else if (inputManager->IsKeyDown(SDLK_d)) {
 			fpsCamera->Strafe(clock.GetDeltaTime() * 50.0f);
+		}
+
+		if (inputManager->IsKeyDown(SDLK_f)) {
+			cube->GetComponent<Rigidbody>()->AddForce(glm::vec3(-1.5f, 0.0f, 0.0f));
 		}
 
 

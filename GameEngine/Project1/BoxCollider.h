@@ -24,10 +24,13 @@ public:
 	~BoxCollider();
 
 	void InitGL();
-	void UpdateBounds(float _minX, float _minY, float _minZ, float _maxX, float _maxY, float _maxZ);
+
+	
 	virtual void Update(float deltaTime) override;
 	bool IsIntersectingBox(const BoxCollider &otherBox);
-	void Draw(Transform transform, FPS_Camera* cam);
+	void Draw(FPS_Camera* cam);
 	virtual bool IsColliding(Collider collider) override;
+
+	//void UpdateBounds(float _minX, float _minY, float _minZ, float _maxX, float _maxY, float _maxZ);
 };
 

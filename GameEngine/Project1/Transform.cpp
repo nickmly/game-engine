@@ -1,5 +1,6 @@
 #include "Transform.h"
 #include <gtc\matrix_transform.hpp>
+#include <iostream>
 
 
 Transform::~Transform()
@@ -8,15 +9,15 @@ Transform::~Transform()
 
 void Transform::SetPosition(glm::vec3 _pos)
 {
-	position = _pos;
-	
+	position += _pos;
+	translateMat = glm::translate(translateMat, _pos);
+	std::cout << position.x << std::endl;
 	UpdateMatrix();
 }
 
 void Transform::Translate(glm::vec3 _stepPos)
 {
 	position += _stepPos;
-	//translateMat = glm::translate(translateMat, _stepPos);
 	UpdateMatrix();
 }
 
@@ -38,6 +39,6 @@ void Transform::Scale(glm::vec3 _stepScale)
 
 void Transform::UpdateMatrix()
 {
-	translateMat = glm::translate(translateMat, position);
+	//translateMat = glm::translate(translateMat, position);
 	transform = translateMat * rotateMat * scaleMat;
 }

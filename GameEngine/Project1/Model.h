@@ -28,7 +28,7 @@ private:
 	std::string directory;
 	FPS_Camera* camera;
 public:
-	Transform transform;
+	Transform *transform;
 
 	void LoadModel(std::string path);
 	void ProcessNode(aiNode* node, const aiScene* scene);
@@ -39,7 +39,7 @@ public:
 	void Render(glm::vec3 lightPos);
 	virtual void Update(float deltaTime) override;
 	Model() {};
-	Model(char* path, Shader _shader, FPS_Camera* _cam);
+	Model(char* path, Shader _shader, FPS_Camera* _cam, Transform *_transform);
 	~Model();
 };
 
