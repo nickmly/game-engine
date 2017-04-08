@@ -94,15 +94,13 @@ void Mesh::Render(Transform transform, glm::vec3 lightPos)
 	glUniformMatrix4fv(viewHandle, 1, GL_FALSE, &camera->GetViewMatrix()[0][0]); // Send it to the GLSL file
 	glUniformMatrix4fv(projHandle, 1, GL_FALSE, &camera->GetProjMatrix()[0][0]); // Send it to the GLSL file
 
+	glUniform3f(glGetUniformLocation(shader.GetProgram(), "lightPosition"), lightPos.x, lightPos.y, lightPos.z);
+	glUniform3f(glGetUniformLocation(shader.GetProgram(), "lightColor"), 1.0f, 0.5f, 1.0f);
+	glUniform3f(glGetUniformLocation(shader.GetProgram(), "cameraPosition"), camera->GetPosition().x, camera->GetPosition().y, camera->GetPosition().z);
 
-	glUniform3f(glGetUniformLocation(shader.GetProgram(), "diffuse_color"), 1.0f, 1.0f, 1.0f);
-	glUniform3f(glGetUniformLocation(shader.GetProgram(), "specular_color"), 1.0f, 0.5f, 0.0f);
-	glUniform3f(glGetUniformLocation(shader.GetProgram(), "light_position"), lightPos.x, lightPos.y, lightPos.z);
+	glm::mat3 normalMat = transform.GetMatrix();
+	glUniformMatrix3fv(glGetUniformLocation(shader.GetProgram(), "normalMatrix"), 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(normalMat))));
 
-	glUniform3f(glGetUniformLocation(shader.GetProgram(), "vEyeSpaceCameraPosition"), camera->GetPosition().x, camera->GetPosition().y, camera->GetPosition().z);
-	
-	glm::mat3 MV = transform.GetMatrix() * camera->GetViewMatrix();
-	glUniformMatrix3fv(glGetUniformLocation(shader.GetProgram(), "lightNormal"), 1, GL_FALSE, glm::value_ptr(glm::inverse(MV)));
 	
 	// Draw mesh
 	glBindVertexArray(VAO);

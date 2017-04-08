@@ -102,7 +102,7 @@ int main(int argc, char** argv)
 	fpsCamera->SetupProjection(120.0f, SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 1000.0f);
 	fpsCamera->SetPosition(glm::vec3(0.0f, 0.0f, -20.0f));	
 
-	Shader modelShader = Shader(FileReader::ReadFromFile("Shaders/model_shader.vert").c_str(), FileReader::ReadFromFile("Shaders/model_shader.frag").c_str());
+	Shader modelShader = Shader(FileReader::ReadFromFile("Shaders/modelShaderVertex.glsl").c_str(), FileReader::ReadFromFile("Shaders/modelShaderFrag.glsl").c_str());
 
 	GameObject* skull = new GameObject();
 	skull->transform->SetPosition(glm::vec3(0.0, 0.0f, 0.0f));
@@ -113,7 +113,6 @@ int main(int argc, char** argv)
 	skull->AddComponent(new Model("Models/skull.obj", modelShader, fpsCamera, skull->transform));
 	Model* model = skull->GetComponent<Model>();
 
-//	model->transform->Scale(glm::vec3(0.00004f));
 
 	skull->AddComponent(new BoxCollider(skull->transform));
 	BoxCollider* skullCol = skull->GetComponent<BoxCollider>();
@@ -121,8 +120,6 @@ int main(int argc, char** argv)
 	cube->AddComponent(new Model("Models/cube.obj", modelShader, fpsCamera, cube->transform));
 	Model* cubeModel = cube->GetComponent<Model>();		
 
-	//cubeModel->transform->SetPosition(glm::vec3(0.02f, 0.0f, 0.0f));
-	//cubeModel->transform->Scale(glm::vec3(0.1));
 
 	cube->AddComponent(new Rigidbody(cube->transform));
 	Rigidbody* cubeRb = cube->GetComponent<Rigidbody>();
@@ -137,8 +134,8 @@ int main(int argc, char** argv)
 	renderer.Enable();
 
 	SDL_Event windowEvent;
-	float mouseX = 0.0f;
-	float mouseY = 0.0f;
+	Sint32 mouseX = 0.0f;
+	Sint32 mouseY = 0.0f;
 
 	while (true)
 	{
@@ -158,11 +155,11 @@ int main(int argc, char** argv)
 			}
 			if (windowEvent.type == SDL_MOUSEMOTION)
 			{
-				mouseX = windowEvent.motion.x;
-				mouseY = windowEvent.motion.y;
+				mouseX = windowEvent.motion.xrel;
+				mouseY = windowEvent.motion.yrel;
 
-				camRotation.x += (windowEvent.motion.xrel * 4.0f * clock.GetDeltaTime()) * -1.0f;
-				camRotation.y += windowEvent.motion.yrel * 4.0f * clock.GetDeltaTime();
+				camRotation.x += (mouseX * 4.0f * clock.GetDeltaTime()) * -1.0f;
+				camRotation.y += mouseY * 4.0f * clock.GetDeltaTime();
 			}			
 		}
 		//
@@ -175,26 +172,20 @@ int main(int argc, char** argv)
 		fpsCamera->Rotate(camRotation.x, camRotation.y, camRotation.z);
 
 		model->Render(lightPos);
-		//model->transform->Rotate(glm::vec3(0.0f, clock.GetDeltaTime(), 0.0f));
+		skull->transform->Rotate(glm::vec3(0.0f, clock.GetDeltaTime(), 0.0f));
 
 		cubeModel->Render(lightPos);
 
-
-	//	std::cout << "cubeObject  : " << cube->transform->position.x << std::endl;
-		//std::cout << "cubeCollider: " << cubeCol->transform->position.x << std::endl;
-		//std::cout << "cubeModel   : " << cubeModel->transform->position.x << std::endl;
-		//std::cout << "CubeRB      : "<< cubeRb->transform->position.x << std::endl;
-		//std::cout << "cube: " << cube->transform->position.x << std::endl;
 		
 		if (cubeCol->IsIntersectingBox(*skullCol))
 		{
-			std::cout << "Colliding" << std::endl;
+			//std::cout << "Colliding" << std::endl;
 
 			//cubeRb->initialVelocity.x = -cubeRb->initialVelocity.x;
 		}
 		else
 		{
-			std::cout << "Not colliding" << std::endl;
+			//std::cout << "Not colliding" << std::endl;
 		}
 		//
 
@@ -220,6 +211,7 @@ int main(int argc, char** argv)
 		if (inputManager->IsKeyDown(SDLK_f)) {
 			cube->GetComponent<Rigidbody>()->AddForce(glm::vec3(-1.5f, 0.0f, 0.0f));
 		}
+
 
 
 		renderer.PostRender();

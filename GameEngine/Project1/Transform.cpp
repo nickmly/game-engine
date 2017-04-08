@@ -11,7 +11,7 @@ void Transform::SetPosition(glm::vec3 _pos)
 {
 	position += _pos;
 	translateMat = glm::translate(translateMat, _pos);
-	std::cout << position.x << std::endl;
+
 	UpdateMatrix();
 }
 
