@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include "Light.h"
 #include "Vertex.h"
 #include "FPS_Camera.h"
 
@@ -9,6 +10,7 @@
 #include <string>
 #include <sstream>
 
+#pragma warning(disable:4996)
 
 Mesh::Mesh(std::vector<Vertex> _vertices, std::vector<GLuint> _indices, std::vector<Texture> _textures, Shader _shader, FPS_Camera* _camera)
 {
@@ -67,7 +69,8 @@ void Mesh::SetupMesh()
 }
 
 
-void Mesh::Render(Transform transform, glm::vec3 lightPos)
+// TODO: Find better way to pass lights through to this
+void Mesh::Render(Transform transform, Light dirLight, std::vector<Light> lights)
 {
 	// Bind appropriate textures
 	GLuint diffuseNr = 1;
@@ -89,25 +92,58 @@ void Mesh::Render(Transform transform, glm::vec3 lightPos)
 		// And finally bind the texture
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
-	
-	glUniformMatrix4fv(modelHandle, 1, GL_FALSE, &transform.GetMatrix()[0][0]); // Send it to the GLSL file
-	glUniformMatrix4fv(viewHandle, 1, GL_FALSE, &camera->GetViewMatrix()[0][0]); // Send it to the GLSL file
-	glUniformMatrix4fv(projHandle, 1, GL_FALSE, &camera->GetProjMatrix()[0][0]); // Send it to the GLSL file
 
-	glUniform3f(glGetUniformLocation(shader.GetProgram(), "lightPosition"), lightPos.x, lightPos.y, lightPos.z);
-	glUniform3f(glGetUniformLocation(shader.GetProgram(), "lightColor"), 1.0f, 0.5f, 1.0f);
+	// Send model, view and projection data to GLSL file
+	glUniformMatrix4fv(modelHandle, 1, GL_FALSE, &transform.GetMatrix()[0][0]);
+	glUniformMatrix4fv(viewHandle, 1, GL_FALSE, &camera->GetViewMatrix()[0][0]);
+	glUniformMatrix4fv(projHandle, 1, GL_FALSE, &camera->GetProjMatrix()[0][0]);
+
+	// Send light data to GLSL file
+	if (dirLight.direction.w == 1.0f) // Directional Light
+	{
+		glUniform3f(glGetUniformLocation(shader.GetProgram(), "directionalLight.position"), dirLight.position.x, dirLight.position.y, dirLight.position.z);
+		glUniform3f(glGetUniformLocation(shader.GetProgram(), "directionalLight.direction"), dirLight.direction.x, dirLight.direction.y, dirLight.direction.z);
+		glUniform3f(glGetUniformLocation(shader.GetProgram(), "directionalLight.ambient"), dirLight.ambient.x, dirLight.ambient.y, dirLight.ambient.z);
+		glUniform3f(glGetUniformLocation(shader.GetProgram(), "directionalLight.diffuse"), dirLight.diffuse.x, dirLight.diffuse.y, dirLight.diffuse.z);
+		glUniform3f(glGetUniformLocation(shader.GetProgram(), "directionalLight.specular"), dirLight.specular.x, dirLight.specular.y, dirLight.specular.z);
+
+	}
+
+	//TODO: Come up with faster way that doesn't involve using glGetUniformLocation every frame
+	for (int i = 0; i < lights.size(); i++)
+	{
+		Light light = lights[i];
+
+		std::string currentLight = std::string("pointLights[" + std::to_string(i) + "]");
+		glUniform3f(glGetUniformLocation(shader.GetProgram(), std::string(currentLight + ".position").c_str()), light.position.x, light.position.y, light.position.z);
+		glUniform3f(glGetUniformLocation(shader.GetProgram(), std::string(currentLight + ".ambient").c_str()), light.ambient.x, light.ambient.y, light.ambient.z);
+		glUniform3f(glGetUniformLocation(shader.GetProgram(), std::string(currentLight + ".diffuse").c_str()), light.diffuse.x, light.diffuse.y, light.diffuse.z);
+		glUniform3f(glGetUniformLocation(shader.GetProgram(), std::string(currentLight + ".specular").c_str()), light.specular.x, light.specular.y, light.specular.z);
+		glUniform1f(glGetUniformLocation(shader.GetProgram(), std::string(currentLight + ".constant").c_str()), light.constant);
+		glUniform1f(glGetUniformLocation(shader.GetProgram(), std::string(currentLight + ".linear").c_str()), light.linear);
+		glUniform1f(glGetUniformLocation(shader.GetProgram(), std::string(currentLight + ".quadratic").c_str()), light.quadratic);
+
+	}
+
+
+
+	// Send material data to GLSL file
+	glUniform3f(glGetUniformLocation(shader.GetProgram(), "material.ambient"), 0.1f, 0.1f, 0.1f);
+	glUniform3f(glGetUniformLocation(shader.GetProgram(), "material.diffuse"), 1.0f, 0.75f, 0.25f);
+	glUniform3f(glGetUniformLocation(shader.GetProgram(), "material.specular"), 1.0f, 1.0f, 1.0f);
+	glUniform1f(glGetUniformLocation(shader.GetProgram(), "material.shininess"), 32.0f);
+
+	// Send camera position to GLSL file
 	glUniform3f(glGetUniformLocation(shader.GetProgram(), "cameraPosition"), camera->GetPosition().x, camera->GetPosition().y, camera->GetPosition().z);
-
 	glm::mat3 normalMat = transform.GetMatrix();
 	glUniformMatrix3fv(glGetUniformLocation(shader.GetProgram(), "normalMatrix"), 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(normalMat))));
 
-	
 	// Draw mesh
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 
-	// Always good practice to set everything back to defaults once configured.
+	// Unbind any active textures
 	for (GLuint i = 0; i < textures.size(); i++)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);

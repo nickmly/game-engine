@@ -1,7 +1,11 @@
 #include "Model.h"
-#include "SOIL.h"
 #include "Vertex.h"
 #include "FPS_Camera.h"
+#include "Light.h"
+
+#include <SOIL.h>
+
+
 #include <ctime>
 
 
@@ -19,12 +23,12 @@ Model::~Model()
 {
 }
 
-void Model::Render(glm::vec3 lightPos)
+void Model::Render(Light dirLight, std::vector<Light> lights)
 {
 	for (GLuint i = 0; i < meshes.size(); i++)
 	{
 		shader.Use();
-		meshes[i].Render(*transform, lightPos);
+		meshes[i].Render(*transform, dirLight, lights);
 	}
 }
 

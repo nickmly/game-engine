@@ -1,0 +1,35 @@
+# Blender MTL File: 'None'
+# Material Count: 3
+
+newmtl Armoured_Officer
+Ns 94.117647
+Ka 1.000000 1.000000 1.000000
+Kd 0.014670 0.014670 0.014670
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Armoured_Police_Officer_No_mask_final.png
+
+newmtl Armoured_Officer_Armoured_Police_Officer.png
+Ns 94.117647
+Ka 1.000000 1.000000 1.000000
+Kd 0.014670 0.014670 0.014670
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Armoured_Police_Officer.png
+
+newmtl Armoured_Officer_NONE
+Ns 94.117647
+Ka 1.000000 1.000000 1.000000
+Kd 0.014670 0.014670 0.014670
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Armoured_Police_Officer.png

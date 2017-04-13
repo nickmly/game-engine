@@ -12,6 +12,8 @@ class Vertex;
 
 class FPS_Camera;
 
+class Light;
+
 struct Texture
 {
 	GLuint id;
@@ -31,7 +33,7 @@ public:
 	GLuint VAO, VBO, EBO;
 	GLuint modelHandle, viewHandle, projHandle;
 	FPS_Camera* camera;
-	void Render(Transform transform, glm::vec3 lightPos);
+	void Render(Transform transform, Light dirLight, std::vector<Light> lights);
 	Mesh(std::vector<Vertex> _vertices, std::vector<unsigned int> _indices, std::vector<Texture> _textures, Shader _shader, FPS_Camera* _camera);
 
 	~Mesh();

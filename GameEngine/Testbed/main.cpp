@@ -19,6 +19,7 @@
 #include "Window.h"
 #include "BoxCollider.h"
 #include "Rigidbody.h"
+#include "Light.h"
 
 
 const char* TITLE = "Window Title";
@@ -91,13 +92,11 @@ int main(int argc, char** argv)
 {		
 	window = new Window(TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, true);
 
-	glm::vec3 camRotation = glm::vec3(0.0f);
-	glm::vec3 lightPos = glm::vec3(0.0f, 0.0f, -20.0f);
-
-	
+	glm::vec3 camRotation = glm::vec3(0.0f);	
 
 	OpenGLRenderer renderer;
 	Clock clock;
+
 	FPS_Camera* fpsCamera = new FPS_Camera();
 	fpsCamera->SetupProjection(120.0f, SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 1000.0f);
 	fpsCamera->SetPosition(glm::vec3(0.0f, 0.0f, -20.0f));	
@@ -108,11 +107,12 @@ int main(int argc, char** argv)
 	skull->transform->SetPosition(glm::vec3(0.0, 0.0f, 0.0f));
 
 	GameObject* cube = new GameObject();
-	cube->transform->SetPosition(glm::vec3(-3.0f, 0.0f, 0.0f));
+	cube->transform->SetPosition(glm::vec3(-5.0f, 0.0f, 0.0f));
 
-	skull->AddComponent(new Model("Models/skull.obj", modelShader, fpsCamera, skull->transform));
+	skull->AddComponent(new Model("Models/nanosuit/nanosuit.obj", modelShader, fpsCamera, skull->transform));
 	Model* model = skull->GetComponent<Model>();
 
+	skull->transform->SetPosition(glm::vec3(0.0f, -5.0f, 10.0f));
 
 	skull->AddComponent(new BoxCollider(skull->transform));
 	BoxCollider* skullCol = skull->GetComponent<BoxCollider>();
@@ -123,12 +123,33 @@ int main(int argc, char** argv)
 
 	cube->AddComponent(new Rigidbody(cube->transform));
 	Rigidbody* cubeRb = cube->GetComponent<Rigidbody>();
-	cubeRb->velocity = glm::vec3(0.05f, 0.0f, 0.0f);
+	cubeRb->velocity = glm::vec3(0.5f, 0.0f, 0.0f);
 
 	cube->AddComponent(new BoxCollider(cube->transform));
 	BoxCollider* cubeCol = cube->GetComponent<BoxCollider>();
 
 
+	Light sunLight = Light(
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(1.0f),
+		glm::vec3(1.0f, 0.67f, 1.0f),
+		glm::vec3(0.25f));
+
+	sunLight.direction = glm::vec4(-0.2f, -1.0f, -0.3f, 1.0f); 
+
+	Light pointLight1 = Light(glm::vec3(0.0f, 10.0f, 20.0f), glm::vec3(10.0f), glm::vec3(50.0f, 0.25f, 0.25f), glm::vec3(0.1f));
+	pointLight1.constant = 1.0f;
+	pointLight1.linear = 0.09f;
+	pointLight1.quadratic = 0.032f;
+
+	Light pointLight2 = Light(glm::vec3(5.0f, 5.0f, 20.0f), glm::vec3(10.0f), glm::vec3(0.25f, 0.35f, 0.8f), glm::vec3(0.1f));
+	pointLight2.constant = 1.0f;
+	pointLight2.linear = 0.09f;
+	pointLight2.quadratic = 0.032f;
+
+	std::vector<Light> lights;
+	lights.push_back(pointLight1);
+	lights.push_back(pointLight2);
 
 
 	renderer.Enable();
@@ -140,8 +161,6 @@ int main(int argc, char** argv)
 	while (true)
 	{
 		clock.Tick();
-	
-
 
 		// Input handling
 		if (SDL_PollEvent(&windowEvent))
@@ -171,28 +190,20 @@ int main(int argc, char** argv)
 		fpsCamera->Update();
 		fpsCamera->Rotate(camRotation.x, camRotation.y, camRotation.z);
 
-		model->Render(lightPos);
+		model->Render(sunLight,lights);
 		skull->transform->Rotate(glm::vec3(0.0f, clock.GetDeltaTime(), 0.0f));
 
-		cubeModel->Render(lightPos);
-
+		cubeModel->Render(sunLight,lights);
 		
+
+		skull->Update((float)clock.GetDeltaTime());
+		cube->Update((float)clock.GetDeltaTime());
+
+
 		if (cubeCol->IsIntersectingBox(*skullCol))
 		{
-			//std::cout << "Colliding" << std::endl;
-
-			//cubeRb->initialVelocity.x = -cubeRb->initialVelocity.x;
+			cubeRb->velocity.x = -cubeRb->velocity.x;
 		}
-		else
-		{
-			//std::cout << "Not colliding" << std::endl;
-		}
-		//
-
-
-		//cubeRb->Update(clock.GetDeltaTime());
-		//skull->Update((float)clock.GetDeltaTime());
-		cube->Update((float)clock.GetDeltaTime());
 
 		if (inputManager->IsKeyDown(SDLK_w)) {
 			fpsCamera->Walk(clock.GetDeltaTime() * 50.0f);
@@ -209,7 +220,7 @@ int main(int argc, char** argv)
 		}
 
 		if (inputManager->IsKeyDown(SDLK_f)) {
-			cube->GetComponent<Rigidbody>()->AddForce(glm::vec3(-1.5f, 0.0f, 0.0f));
+			pointLight1.position.z -= 10.0f * clock.GetDeltaTime();
 		}
 
 

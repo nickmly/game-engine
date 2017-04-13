@@ -15,6 +15,8 @@ void Transform::SetPosition(glm::vec3 _pos)
 	UpdateMatrix();
 }
 
+
+// TODO: this is currently useless
 void Transform::Translate(glm::vec3 _stepPos)
 {
 	position += _stepPos;

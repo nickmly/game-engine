@@ -1,4 +1,5 @@
 #include "InputManager.h"
+
 std::unique_ptr<InputManager> InputManager::instance(nullptr);
 
 InputManager * InputManager::GetInstance()

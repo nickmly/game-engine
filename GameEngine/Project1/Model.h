@@ -1,4 +1,7 @@
 #pragma once
+
+// TODO: refactor these includes to find out which should be put into CPP file
+
 // System
 #include <vector>
 
@@ -11,6 +14,7 @@
 #include "Transform.h"
 #include "Component.h"
 
+
 // ASSIMP
 #include "Importer.hpp"
 #include "scene.h"
@@ -18,6 +22,7 @@
 
 class Vertex;
 class FPS_Camera;
+class Light;
 
 class Model : public Component
 {
@@ -36,7 +41,7 @@ public:
 	std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
 	GLint TextureFromFile(const char* path, std::string directory);
 
-	void Render(glm::vec3 lightPos);
+	void Render(Light dirLight, std::vector<Light> lights);
 	virtual void Update(float deltaTime) override;
 	Model() {};
 	Model(char* path, Shader _shader, FPS_Camera* _cam, Transform *_transform);
