@@ -146,9 +146,10 @@ int main(int argc, char** argv)
 	fpsCamera->SetPosition(glm::vec3(20.0f, 20.0f, -20.0f));	
 
 	Shader modelShader = Shader(FileReader::ReadFromFile("Shaders/modelShaderVertex.glsl").c_str(), FileReader::ReadFromFile("Shaders/modelShaderFrag.glsl").c_str());
-
+	Shader lampShader = Shader(FileReader::ReadFromFile("Shaders/modelShaderVertex.glsl").c_str(), FileReader::ReadFromFile("Shaders/modelShaderFrag_NoLight.glsl").c_str());
 	GameObject* skull = new GameObject();
 	skull->transform->SetPosition(glm::vec3(0.0, 0.0f, 0.0f));
+
 
 	GameObject* cubes[NUM_OF_BOXES];
 	for (int i = 0; i < NUM_OF_BOXES; i++)
@@ -168,7 +169,8 @@ int main(int argc, char** argv)
 	skull->transform->SetPosition(glm::vec3(0.0f, -5.0f, 10.0f));	
 
 	
-
+	GameObject* lamp = new GameObject();
+	lamp->AddComponent(new Model("Models/lamp.obj", lampShader, fpsCamera, lamp->transform));
 
 	Light sunLight = Light(
 		glm::vec3(0.0f, 0.0f, 0.0f),
@@ -189,6 +191,7 @@ int main(int argc, char** argv)
 	pointLight2.linear = 0.09f;
 	pointLight2.quadratic = 0.032f;
 
+	lamp->transform->SetPosition(pointLight1.position);
 	std::vector<Light> lights;
 	lights.push_back(pointLight1);
 	lights.push_back(pointLight2);
@@ -238,6 +241,8 @@ int main(int argc, char** argv)
 		model->Render(sunLight,lights);
 		skull->transform->Rotate(glm::vec3(0.0f, clock.GetDeltaTime(), 0.0f));
 
+		lamp->GetComponent<Model>()->Render(sunLight, lights);
+
 		for (int i = 0; i < NUM_OF_BOXES; i++)
 		{
 			cubes[i]->GetComponent<Model>()->Render(sunLight, lights);
@@ -268,10 +273,48 @@ int main(int argc, char** argv)
 			fpsCamera->Strafe(clock.GetDeltaTime() * 50.0f);
 		}
 
-		if (inputManager->IsKeyDown(SDLK_f)) {
+		if (inputManager->IsKeyDown(SDLK_KP_8)) {
+		
+			lights[0].position.y += 10.0f * clock.GetDeltaTime();
+			lights[1].position.y += 10.0f * clock.GetDeltaTime();
+			lamp->transform->SetPosition(lights[0].position);
+		}
+
+		if (inputManager->IsKeyDown(SDLK_KP_2)) {
+
+			lights[0].position.y -= 10.0f * clock.GetDeltaTime();
+			lights[1].position.y -= 10.0f * clock.GetDeltaTime();
+			lamp->transform->SetPosition(lights[0].position);
+		}
+
+		if (inputManager->IsKeyDown(SDLK_KP_4)) {
+
+			lights[0].position.x += 10.0f * clock.GetDeltaTime();
+			lights[1].position.x += 10.0f * clock.GetDeltaTime();
+			lamp->transform->SetPosition(lights[0].position);
+		}
+
+		if (inputManager->IsKeyDown(SDLK_KP_6)) {
+
+			lights[0].position.x -= 10.0f * clock.GetDeltaTime();
+			lights[1].position.x -= 10.0f * clock.GetDeltaTime();
+			lamp->transform->SetPosition(lights[0].position);
+		}
+
+		if (inputManager->IsKeyDown(SDLK_KP_1)) {
+
+			lights[0].position.z += 10.0f * clock.GetDeltaTime();
+			lights[1].position.z += 10.0f * clock.GetDeltaTime();
+			lamp->transform->SetPosition(lights[0].position);
+		}
+
+		if (inputManager->IsKeyDown(SDLK_KP_3)) {
+
 			lights[0].position.z -= 10.0f * clock.GetDeltaTime();
 			lights[1].position.z -= 10.0f * clock.GetDeltaTime();
+			lamp->transform->SetPosition(lights[0].position);
 		}
+
 		if (inputManager->IsKeyDown(SDLK_z))
 		{
 			lights[0].diffuse = glm::vec3(0.0f, 100.0f, 0.0f);

@@ -20,19 +20,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\model_shader_basic.frag">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Shaders\model_shader_basic.vert">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Shaders\model_shader_nolight.vert">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="Shaders\modelShaderFrag.glsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="Shaders\modelShaderVertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Shaders\modelShaderFrag_NoLight.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
