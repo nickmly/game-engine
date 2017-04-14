@@ -32,6 +32,8 @@ const char* TITLE = "Window Title";
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 
+const int NUM_OF_BOXES = 8;
+
 TTF_Font *font;
 
 Window* window;
@@ -65,9 +67,6 @@ void initPhysicsSim()
 
 	groundRb = new BulletRigidbody(groundShape, btVector3(0, -1, 0), btQuaternion(0, 0, 0, 1), 0.0f);
 	world->AddRigidbody(groundRb->GetBtRigidbody());
-	
-	fallRb = new BulletRigidbody(fallShape, btVector3(0, 50, 0), btQuaternion(0, 0, 0, 1), 1.0f);
-	world->AddRigidbody(fallRb->GetBtRigidbody());
 }
 
 void quitGame()
@@ -132,6 +131,9 @@ void renderText(char* text)
 InputManager* inputManager = InputManager::GetInstance();
 int main(int argc, char** argv) 
 {		
+
+	initPhysicsSim();
+
 	window = new Window(TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, true);
 
 	glm::vec3 camRotation = glm::vec3(0.0f);	
@@ -141,34 +143,31 @@ int main(int argc, char** argv)
 
 	FPS_Camera* fpsCamera = new FPS_Camera();
 	fpsCamera->SetupProjection(120.0f, SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 1000.0f);
-	fpsCamera->SetPosition(glm::vec3(0.0f, 0.0f, -20.0f));	
+	fpsCamera->SetPosition(glm::vec3(20.0f, 20.0f, -20.0f));	
 
 	Shader modelShader = Shader(FileReader::ReadFromFile("Shaders/modelShaderVertex.glsl").c_str(), FileReader::ReadFromFile("Shaders/modelShaderFrag.glsl").c_str());
 
 	GameObject* skull = new GameObject();
 	skull->transform->SetPosition(glm::vec3(0.0, 0.0f, 0.0f));
 
-	GameObject* cube = new GameObject();
-	cube->transform->SetPosition(glm::vec3(-5.0f, 0.0f, 0.0f));
+	GameObject* cubes[NUM_OF_BOXES];
+	for (int i = 0; i < NUM_OF_BOXES; i++)
+	{
+		cubes[i] = new GameObject();
+		cubes[i]->AddComponent(new Model("Models/cube.obj", modelShader, fpsCamera, cubes[i]->transform));
+		//Model* cubeModel = cubes[i]->GetComponent<Model>();
+		fallRb = new BulletRigidbody(fallShape, btVector3(0, 50 + (i * 2), 0), btQuaternion(0, 0, 0, 1), 1.0f);	
+		cubes[i]->AddComponent(fallRb);
+		world->AddRigidbody(cubes[i]->GetComponent<BulletRigidbody>()->GetBtRigidbody());
+	}
+	
 
 	skull->AddComponent(new Model("Models/nanosuit/nanosuit.obj", modelShader, fpsCamera, skull->transform));
 	Model* model = skull->GetComponent<Model>();
 
-	skull->transform->SetPosition(glm::vec3(0.0f, -5.0f, 10.0f));
+	skull->transform->SetPosition(glm::vec3(0.0f, -5.0f, 10.0f));	
 
-	/*skull->AddComponent(new BoxCollider(skull->transform));
-	BoxCollider* skullCol = skull->GetComponent<BoxCollider>();*/
 	
-	cube->AddComponent(new Model("Models/cube.obj", modelShader, fpsCamera, cube->transform));
-	Model* cubeModel = cube->GetComponent<Model>();		
-
-
-	/*cube->AddComponent(new Rigidbody(cube->transform));
-	Rigidbody* cubeRb = cube->GetComponent<Rigidbody>();
-	cubeRb->velocity = glm::vec3(0.5f, 0.0f, 0.0f);*/
-
-	/*cube->AddComponent(new BoxCollider(cube->transform));
-	BoxCollider* cubeCol = cube->GetComponent<BoxCollider>();*/
 
 
 	Light sunLight = Light(
@@ -194,7 +193,7 @@ int main(int argc, char** argv)
 	lights.push_back(pointLight2);
 
 
-	initPhysicsSim();
+	
 	renderer.Enable();
 
 	SDL_Event windowEvent;
@@ -210,6 +209,8 @@ int main(int argc, char** argv)
 		{
 			if (windowEvent.type == SDL_QUIT)
 				break;
+			inputManager->prevKeyEvent = inputManager->currentKeyEvent;
+			inputManager->currentKeyEvent = windowEvent.key;		
 			if (windowEvent.type == SDL_KEYDOWN)
 			{
 				if (windowEvent.key.keysym.sym == SDLK_ESCAPE)
@@ -236,18 +237,21 @@ int main(int argc, char** argv)
 		model->Render(sunLight,lights);
 		skull->transform->Rotate(glm::vec3(0.0f, clock.GetDeltaTime(), 0.0f));
 
-		cubeModel->Render(sunLight,lights);
+		for (int i = 0; i < NUM_OF_BOXES; i++)
+		{
+			cubes[i]->GetComponent<Model>()->Render(sunLight, lights);
+		}
 		
 		//Bullet
-		world->Step(clock.GetDeltaTime(), 10);
-		btTransform trans;
-		fallRb->GetTransform(trans);
-		cube->transform->SetPosition(glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
-		std::cout << cube->transform->position.y << std::endl;
+		world->Step(clock.GetDeltaTime(), 10);			
 		//
 
 		skull->Update((float)clock.GetDeltaTime());
-		cube->Update((float)clock.GetDeltaTime());
+
+		for (int i = 0; i < NUM_OF_BOXES; i++)
+		{
+			cubes[i]->Update((float)clock.GetDeltaTime());
+		}
 
 		if (inputManager->IsKeyDown(SDLK_w)) {
 			fpsCamera->Walk(clock.GetDeltaTime() * 50.0f);
@@ -275,6 +279,19 @@ int main(int argc, char** argv)
 		{
 			lights[0].diffuse = glm::vec3(100.0f, 0.0f, 0.0f);
 		}
+		if (inputManager->IsKeyDown(SDLK_SPACE))
+		{
+			for (int i = 0; i < NUM_OF_BOXES; i++)
+			{
+				cubes[i]->GetComponent<BulletRigidbody>()->ApplyForce(btVector3(i, 10, 0));
+			}			
+		}
+
+		//Follow camera for testing purposes
+		/*glm::vec3 cubePos = cubes[0]->transform->position;
+		cubePos.y += 10;
+		cubePos.z -= 10;
+		fpsCamera->SetPosition(cubePos);*/
 
 
 
@@ -285,6 +302,13 @@ int main(int argc, char** argv)
 		
 	}
 
+	for (int i = 0; i < NUM_OF_BOXES; i++)
+	{
+		delete cubes[i];
+	}
+	delete skull;
+	delete model;
+	delete fpsCamera;
 	quitGame();
 	
 	return 0;

@@ -11,11 +11,10 @@ private:
 	static std::unique_ptr<InputManager> instance;
 	friend std::default_delete<InputManager>;
 public:
-	SDL_KeyboardEvent keyboardEvent;
+	SDL_KeyboardEvent currentKeyEvent, prevKeyEvent;
 	static InputManager* GetInstance();
 	bool IsKeyDown(SDL_Keycode key);
-
-	void SetKeyEvent(SDL_KeyboardEvent _key);
+	bool IsKeyDownOneShot(SDL_Keycode key);
 
 };
 #endif

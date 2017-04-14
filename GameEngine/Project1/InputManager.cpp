@@ -22,10 +22,12 @@ bool InputManager::IsKeyDown(SDL_Keycode key)
 	return false;
 }
 
-void InputManager::SetKeyEvent(SDL_KeyboardEvent _keyEvent)
+// TODO: this stops working after a while??
+bool InputManager::IsKeyDownOneShot(SDL_Keycode key)
 {
-	keyboardEvent = _keyEvent;
+	return currentKeyEvent.type == SDL_KEYDOWN && currentKeyEvent.keysym.sym == key && prevKeyEvent.type == SDL_KEYUP;
 }
+
 
 
 

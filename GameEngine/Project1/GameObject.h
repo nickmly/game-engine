@@ -15,6 +15,7 @@ public:
 
 	void AddComponent(Component* c)
 	{
+		c->parent = this;
 		components.push_back(c);
 	};
 
@@ -34,7 +35,7 @@ public:
 	{
 		for (int i = 0; i < components.size(); i++)
 		{
-			//std::cout << components.at(i)->name << " updating" << std::endl;
+			//std::cout << components.at(i)->name << " updating" << std::endl;			
 			components.at(i)->Update(deltaTime);
 		}
 	};
