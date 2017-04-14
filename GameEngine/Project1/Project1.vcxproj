@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="AbstractCamera.h" />
     <ClInclude Include="BoxCollider.h" />
+    <ClInclude Include="BulletRigidbody.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="Component.h" />
@@ -32,6 +33,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="OpenGLRenderer.h" />
+    <ClInclude Include="PhysicsWorld.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="AbstractScene.h" />
     <ClInclude Include="Rigidbody.h" />
@@ -44,6 +46,7 @@
   <ItemGroup>
     <ClCompile Include="AbstractCamera.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
+    <ClCompile Include="BulletRigidbody.cpp" />
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Component.cpp" />
@@ -54,6 +57,7 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="OpenGLRenderer.cpp" />
+    <ClCompile Include="PhysicsWorld.cpp" />
     <ClCompile Include="Rigidbody.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -117,7 +121,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\Dependencies\glew-2.0.0\include;$(SolutionDir)\..\..\Dependencies\glm-0.9.8.0\glm;$(SolutionDir)\..\..\Dependencies\SDL2-devel-2.0.5-VC\SDL2-2.0.5\include;$(SolutionDir)\..\..\Dependencies\SDL2_ttf-devel-2.0.14-VC\SDL2_ttf-2.0.14\include;$(SolutionDir)\..\..\Dependencies\freetype-2.3.5-1-bin\include\freetype2;$(SolutionDir)\..\..\Dependencies\assimp\include\assimp;$(SolutionDir)\..\..\Dependencies\SOIL\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\Dependencies\glew-2.0.0\include;$(SolutionDir)\..\..\Dependencies\glm-0.9.8.0\glm;$(SolutionDir)\..\..\Dependencies\SDL2-devel-2.0.5-VC\SDL2-2.0.5\include;$(SolutionDir)\..\..\Dependencies\SDL2_ttf-devel-2.0.14-VC\SDL2_ttf-2.0.14\include;$(SolutionDir)\..\..\Dependencies\freetype-2.3.5-1-bin\include\freetype2;$(SolutionDir)\..\..\Dependencies\assimp\include\assimp;$(SolutionDir)\..\..\Dependencies\SOIL\src;$(SolutionDir)\..\..\Dependencies\bullet3\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)\..\..\Dependencies\SDL2-devel-2.0.5-VC\SDL2-2.0.5\lib\x86;$(SolutionDir)\..\..\Dependencies\glew-2.0.0\lib\Release\Win32;$(SolutionDir)\..\..\Dependencies\SDL2_ttf-devel-2.0.14-VC\SDL2_ttf-2.0.14\lib\x86;$(SolutionDir)\..\..\Dependencies\freetype-2.3.5-1-bin\lib;$(SolutionDir)\..\..\Dependencies\assimp\lib;$(SolutionDir)\..\..\Dependencies\SOIL\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

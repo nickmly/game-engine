@@ -74,7 +74,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Project1;$(SolutionDir)\..\..\Dependencies\SDL2-devel-2.0.5-VC\SDL2-2.0.5\include;$(SolutionDir)\..\..\Dependencies\glew-2.0.0\include;$(SolutionDir)\..\..\Dependencies\SDL2_ttf-devel-2.0.14-VC\SDL2_ttf-2.0.14\include;$(SolutionDir)\..\..\Dependencies\freetype-2.3.5-1-bin\include\freetype2;$(SolutionDir)\..\..\Dependencies\assimp\include\assimp;$(SolutionDir)\..\..\Dependencies\SOIL\src;$(SolutionDir)\..\..\Dependencies\glm-0.9.8.0\glm</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Project1;$(SolutionDir)\..\..\Dependencies\SDL2-devel-2.0.5-VC\SDL2-2.0.5\include;$(SolutionDir)\..\..\Dependencies\glew-2.0.0\include;$(SolutionDir)\..\..\Dependencies\SDL2_ttf-devel-2.0.14-VC\SDL2_ttf-2.0.14\include;$(SolutionDir)\..\..\Dependencies\freetype-2.3.5-1-bin\include\freetype2;$(SolutionDir)\..\..\Dependencies\assimp\include\assimp;$(SolutionDir)\..\..\Dependencies\SOIL\src;$(SolutionDir)\..\..\Dependencies\glm-0.9.8.0\glm;$(SolutionDir)\..\..\Dependencies\bullet3\src</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)\..\..\Dependencies\SDL2-devel-2.0.5-VC\SDL2-2.0.5\lib\x86;$(SolutionDir)\..\..\Dependencies\glew-2.0.0\lib\Release\Win32;$(SolutionDir)\..\..\Dependencies\SDL2_ttf-devel-2.0.14-VC\SDL2_ttf-2.0.14\lib\x86;$(SolutionDir)\..\..\Dependencies\freetype-2.3.5-1-bin\lib;$(SolutionDir)\..\..\Dependencies\assimp\lib;$(SolutionDir)\..\..\Dependencies\SOIL\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -116,12 +117,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Dependencies\bullet3\build\src\BulletCollision\BulletCollision.vcxproj">
+      <Project>{4e6f58e8-b2e8-3797-917a-702873a1de9b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Dependencies\bullet3\build\src\BulletDynamics\BulletDynamics.vcxproj">
+      <Project>{1df24c91-828e-380b-8cf5-834a27c4aaf8}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Dependencies\bullet3\build\src\LinearMath\LinearMath.vcxproj">
+      <Project>{cb41e76d-ac1e-3232-af02-12b0a5aae067}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Project1\Project1.vcxproj">
       <Project>{5be3e785-f7d8-4606-8400-e1d6ff72bebe}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\modelShaderFrag.glsl" />
+    <None Include="Shaders\modelShaderVertex.glsl" />
+    <None Include="Shaders\model_shader_basic.frag" />
+    <None Include="Shaders\model_shader_basic.vert" />
+    <None Include="Shaders\model_shader_nolight.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
