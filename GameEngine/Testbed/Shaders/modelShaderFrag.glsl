@@ -99,6 +99,6 @@ void main()
 		result += calcPointLight(pointLights[i]);
 	}
 	
-	fColor = vec4(texture(texture_diffuse1, TexCoords)) * vec4(result,1.0f);
+	fColor = vec4(result,1.0f);
 }
 

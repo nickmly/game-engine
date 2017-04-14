@@ -131,18 +131,18 @@ int main(int argc, char** argv)
 
 	Light sunLight = Light(
 		glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(1.0f),
+		glm::vec3(0.0f),
 		glm::vec3(1.0f, 0.67f, 1.0f),
 		glm::vec3(0.25f));
 
 	sunLight.direction = glm::vec4(-0.2f, -1.0f, -0.3f, 1.0f); 
 
-	Light pointLight1 = Light(glm::vec3(0.0f, 10.0f, 20.0f), glm::vec3(10.0f), glm::vec3(50.0f, 0.25f, 0.25f), glm::vec3(0.1f));
+	Light pointLight1 = Light(glm::vec3(0.0f, 20.0f, 20.0f), glm::vec3(10.0f), glm::vec3(100.0f, 0.0f, 0.0f), glm::vec3(0.1f));
 	pointLight1.constant = 1.0f;
-	pointLight1.linear = 0.09f;
+	pointLight1.linear = 0.07f;
 	pointLight1.quadratic = 0.032f;
 
-	Light pointLight2 = Light(glm::vec3(5.0f, 5.0f, 20.0f), glm::vec3(10.0f), glm::vec3(0.25f, 0.35f, 0.8f), glm::vec3(0.1f));
+	Light pointLight2 = Light(glm::vec3(5.0f, 20.0f, 20.0f), glm::vec3(10.0f), glm::vec3(0.0f, 0.0f, 100.0f), glm::vec3(0.1f));
 	pointLight2.constant = 1.0f;
 	pointLight2.linear = 0.09f;
 	pointLight2.quadratic = 0.032f;
@@ -177,8 +177,8 @@ int main(int argc, char** argv)
 				mouseX = windowEvent.motion.xrel;
 				mouseY = windowEvent.motion.yrel;
 
-				camRotation.x += (mouseX * 4.0f * clock.GetDeltaTime()) * -1.0f;
-				camRotation.y += mouseY * 4.0f * clock.GetDeltaTime();
+				camRotation.x += (mouseX * 40.0f * clock.GetDeltaTime()) * -1.0f;
+				camRotation.y += mouseY * 40.0f * clock.GetDeltaTime();
 			}			
 		}
 		//
@@ -220,7 +220,8 @@ int main(int argc, char** argv)
 		}
 
 		if (inputManager->IsKeyDown(SDLK_f)) {
-			pointLight1.position.z -= 10.0f * clock.GetDeltaTime();
+			lights[0].position.z -= 10.0f * clock.GetDeltaTime();
+			lights[1].position.z -= 10.0f * clock.GetDeltaTime();
 		}
 
 
