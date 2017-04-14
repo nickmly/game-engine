@@ -126,10 +126,10 @@ void Mesh::Render(Transform transform, Light dirLight, std::vector<Light> lights
 	}
 
 
-
+	//TODO: this is not used when you have diffuse maps
 	// Send material data to GLSL file
 	glUniform3f(glGetUniformLocation(shader.GetProgram(), "material.ambient"), 0.1f, 0.1f, 0.1f);
-	glUniform3f(glGetUniformLocation(shader.GetProgram(), "material.diffuse"), 1.0f, 0.75f, 0.25f);
+	glUniform3f(glGetUniformLocation(shader.GetProgram(), "material.diffuse"), 1.0f, 1.0f, 1.0f);
 	glUniform3f(glGetUniformLocation(shader.GetProgram(), "material.specular"), 1.0f, 1.0f, 1.0f);
 	glUniform1f(glGetUniformLocation(shader.GetProgram(), "material.shininess"), 32.0f);
 

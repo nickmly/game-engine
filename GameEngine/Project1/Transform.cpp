@@ -8,18 +8,17 @@ Transform::~Transform()
 }
 
 void Transform::SetPosition(glm::vec3 _pos)
-{
-	position += _pos;
-	translateMat = glm::translate(translateMat, _pos);
-
+{	
+	translateMat = glm::translate(translateMat, _pos - position);
+	position = _pos;
 	UpdateMatrix();
 }
 
 
-// TODO: this is currently useless
 void Transform::Translate(glm::vec3 _stepPos)
 {
 	position += _stepPos;
+	translateMat = glm::translate(translateMat, _stepPos);
 	UpdateMatrix();
 }
 

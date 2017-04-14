@@ -9,6 +9,8 @@ private:
 	glm::mat4 scaleMat;
 
 	glm::vec3 newPosition;
+	void UpdateMatrix();
+
 public:
 	glm::vec3 position;
 	glm::vec3 rotation;
@@ -20,7 +22,7 @@ public:
 	void Translate(glm::vec3 _stepPos);
 	void Rotate(glm::vec3 _stepRot);
 	void Scale(glm::vec3 _stepScale);
-	void UpdateMatrix();
+
 	glm::mat4 GetMatrix() { return transform; };
 };
 

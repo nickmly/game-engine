@@ -8,6 +8,10 @@
 #include <SDL_ttf.h>
 #include <glm.hpp>
 
+// Bullet Physics
+#include <btBulletDynamicsCommon.h>
+#include <BulletCollision\Gimpact\btGImpactCollisionAlgorithm.h>
+
 // Engine
 #include "GameObject.h"
 #include "InputManager.h"
@@ -20,6 +24,8 @@
 #include "BoxCollider.h"
 #include "Rigidbody.h"
 #include "Light.h"
+#include "PhysicsWorld.h"
+#include "BulletRigidbody.h"
 
 
 const char* TITLE = "Window Title";
@@ -30,6 +36,18 @@ TTF_Font *font;
 
 Window* window;
 
+
+// Bullet
+PhysicsWorld* world;
+btCollisionShape* groundShape;
+btCollisionShape* fallShape;
+
+btDefaultMotionState* groundMotionState;
+btDefaultMotionState* fallState;
+
+BulletRigidbody* groundRb;
+BulletRigidbody* fallRb;
+
 void initTTF()
 {
 	TTF_Init();
@@ -37,10 +55,34 @@ void initTTF()
 
 }
 
+
+void initPhysicsSim()
+{
+	world = new PhysicsWorld();
+
+	groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1);
+	fallShape = new btBoxShape(btVector3(1, 1, 1));
+
+	groundRb = new BulletRigidbody(groundShape, btVector3(0, -1, 0), btQuaternion(0, 0, 0, 1), 0.0f);
+	world->AddRigidbody(groundRb->GetBtRigidbody());
+	
+	fallRb = new BulletRigidbody(fallShape, btVector3(0, 50, 0), btQuaternion(0, 0, 0, 1), 1.0f);
+	world->AddRigidbody(fallRb->GetBtRigidbody());
+}
+
 void quitGame()
 {	
 	TTF_Quit();
 	window->~Window();
+	delete world;
+	delete groundShape;
+	delete fallShape;
+
+	delete groundMotionState;
+	delete fallState;
+
+	delete groundRb;
+	delete fallRb;
 }
 
 void renderText(char* text)
@@ -114,19 +156,19 @@ int main(int argc, char** argv)
 
 	skull->transform->SetPosition(glm::vec3(0.0f, -5.0f, 10.0f));
 
-	skull->AddComponent(new BoxCollider(skull->transform));
-	BoxCollider* skullCol = skull->GetComponent<BoxCollider>();
+	/*skull->AddComponent(new BoxCollider(skull->transform));
+	BoxCollider* skullCol = skull->GetComponent<BoxCollider>();*/
 	
 	cube->AddComponent(new Model("Models/cube.obj", modelShader, fpsCamera, cube->transform));
 	Model* cubeModel = cube->GetComponent<Model>();		
 
 
-	cube->AddComponent(new Rigidbody(cube->transform));
+	/*cube->AddComponent(new Rigidbody(cube->transform));
 	Rigidbody* cubeRb = cube->GetComponent<Rigidbody>();
-	cubeRb->velocity = glm::vec3(0.5f, 0.0f, 0.0f);
+	cubeRb->velocity = glm::vec3(0.5f, 0.0f, 0.0f);*/
 
-	cube->AddComponent(new BoxCollider(cube->transform));
-	BoxCollider* cubeCol = cube->GetComponent<BoxCollider>();
+	/*cube->AddComponent(new BoxCollider(cube->transform));
+	BoxCollider* cubeCol = cube->GetComponent<BoxCollider>();*/
 
 
 	Light sunLight = Light(
@@ -152,6 +194,7 @@ int main(int argc, char** argv)
 	lights.push_back(pointLight2);
 
 
+	initPhysicsSim();
 	renderer.Enable();
 
 	SDL_Event windowEvent;
@@ -195,15 +238,16 @@ int main(int argc, char** argv)
 
 		cubeModel->Render(sunLight,lights);
 		
+		//Bullet
+		world->Step(clock.GetDeltaTime(), 10);
+		btTransform trans;
+		fallRb->GetTransform(trans);
+		cube->transform->SetPosition(glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
+		std::cout << cube->transform->position.y << std::endl;
+		//
 
 		skull->Update((float)clock.GetDeltaTime());
 		cube->Update((float)clock.GetDeltaTime());
-
-
-		if (cubeCol->IsIntersectingBox(*skullCol))
-		{
-			cubeRb->velocity.x = -cubeRb->velocity.x;
-		}
 
 		if (inputManager->IsKeyDown(SDLK_w)) {
 			fpsCamera->Walk(clock.GetDeltaTime() * 50.0f);
@@ -222,6 +266,14 @@ int main(int argc, char** argv)
 		if (inputManager->IsKeyDown(SDLK_f)) {
 			lights[0].position.z -= 10.0f * clock.GetDeltaTime();
 			lights[1].position.z -= 10.0f * clock.GetDeltaTime();
+		}
+		if (inputManager->IsKeyDown(SDLK_z))
+		{
+			lights[0].diffuse = glm::vec3(0.0f, 100.0f, 0.0f);
+		}
+		if (inputManager->IsKeyDown(SDLK_x))
+		{
+			lights[0].diffuse = glm::vec3(100.0f, 0.0f, 0.0f);
 		}
 
 
