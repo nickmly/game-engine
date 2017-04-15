@@ -117,15 +117,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Dependencies\bullet3\build\src\BulletCollision\BulletCollision.vcxproj">
-      <Project>{4e6f58e8-b2e8-3797-917a-702873a1de9b}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Dependencies\bullet3\build\src\BulletDynamics\BulletDynamics.vcxproj">
-      <Project>{1df24c91-828e-380b-8cf5-834a27c4aaf8}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Dependencies\bullet3\build\src\LinearMath\LinearMath.vcxproj">
-      <Project>{cb41e76d-ac1e-3232-af02-12b0a5aae067}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\Project1\Project1.vcxproj">
       <Project>{5be3e785-f7d8-4606-8400-e1d6ff72bebe}</Project>
     </ProjectReference>

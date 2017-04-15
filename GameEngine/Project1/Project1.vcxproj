@@ -64,6 +64,17 @@
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Dependencies\bullet3\build\src\BulletCollision\BulletCollision.vcxproj">
+      <Project>{4e6f58e8-b2e8-3797-917a-702873a1de9b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Dependencies\bullet3\build\src\BulletDynamics\BulletDynamics.vcxproj">
+      <Project>{1df24c91-828e-380b-8cf5-834a27c4aaf8}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Dependencies\bullet3\build\src\LinearMath\LinearMath.vcxproj">
+      <Project>{cb41e76d-ac1e-3232-af02-12b0a5aae067}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5BE3E785-F7D8-4606-8400-E1D6FF72BEBE}</ProjectGuid>
     <RootNamespace>Project1</RootNamespace>
