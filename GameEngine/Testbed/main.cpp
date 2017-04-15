@@ -131,7 +131,7 @@ void renderText(char* text)
 InputManager* inputManager = InputManager::GetInstance();
 int main(int argc, char** argv) 
 {		
-
+	bool focusOnMouse = true;
 	initPhysicsSim();
 
 	window = new Window(TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, true);
@@ -143,7 +143,7 @@ int main(int argc, char** argv)
 
 	FPS_Camera* fpsCamera = new FPS_Camera();
 	fpsCamera->SetupProjection(120.0f, SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 1000.0f);
-	fpsCamera->SetPosition(glm::vec3(20.0f, 20.0f, -20.0f));	
+	fpsCamera->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));	
 
 	Shader modelShader = Shader(FileReader::ReadFromFile("Shaders/modelShaderVertex.glsl").c_str(), FileReader::ReadFromFile("Shaders/modelShaderFrag.glsl").c_str());
 	Shader lampShader = Shader(FileReader::ReadFromFile("Shaders/modelShaderVertex.glsl").c_str(), FileReader::ReadFromFile("Shaders/modelShaderFrag_NoLight.glsl").c_str());
@@ -195,8 +195,6 @@ int main(int argc, char** argv)
 	std::vector<Light> lights;
 	lights.push_back(pointLight1);
 	lights.push_back(pointLight2);
-
-
 	
 	renderer.Enable();
 
@@ -220,14 +218,17 @@ int main(int argc, char** argv)
 				if (windowEvent.key.keysym.sym == SDLK_ESCAPE)
 					break;			
 			}
-			if (windowEvent.type == SDL_MOUSEMOTION)
-			{
-				mouseX = windowEvent.motion.xrel;
-				mouseY = windowEvent.motion.yrel;
 
-				camRotation.x += (mouseX * 40.0f * clock.GetDeltaTime()) * -1.0f;
-				camRotation.y += mouseY * 40.0f * clock.GetDeltaTime();
-			}			
+	
+				if (windowEvent.type == SDL_MOUSEMOTION)
+				{
+					mouseX = windowEvent.motion.xrel;
+					mouseY = windowEvent.motion.yrel;
+
+					camRotation.x += mouseX * 4.0f * clock.GetDeltaTime();
+					camRotation.y += mouseY * 4.0f * clock.GetDeltaTime();
+				}
+				
 		}
 		//
 
@@ -235,12 +236,29 @@ int main(int argc, char** argv)
 		renderer.PreRender();
 		renderer.Render();
 
+	
+	/////Camera Target
+		if (focusOnMouse) {
+			fpsCamera->Rotate(camRotation.x, camRotation.y, camRotation.z);
+		}
+
+		if (inputManager->IsKeyDown(SDLK_5)) {
+			focusOnMouse = false;
+			camRotation = fpsCamera->LookAt(lamp->transform->position); // camRotation needs to be done in camera class
+																		// camRotation would have to be updated everytime you wanted to look at something 
+																		// camRotation is set to the current yaw/pitch/roll of the camera or else
+																		// it will snap back to where the previous mouse position was
+																		// because it is calculated by the rel difference
+		}
+		else {
+			focusOnMouse = true;
+		}
 		fpsCamera->Update();
-		fpsCamera->Rotate(camRotation.x, camRotation.y, camRotation.z);
+	//////////////////////
 
 		model->Render(sunLight,lights);
 		skull->transform->Rotate(glm::vec3(0.0f, clock.GetDeltaTime(), 0.0f));
-
+		
 		lamp->GetComponent<Model>()->Render(sunLight, lights);
 
 		for (int i = 0; i < NUM_OF_BOXES; i++)
@@ -330,6 +348,8 @@ int main(int argc, char** argv)
 				cubes[i]->GetComponent<BulletRigidbody>()->ApplyForce(btVector3(i, 10, 0));
 			}			
 		}
+
+
 
 		//Follow camera for testing purposes
 		/*glm::vec3 cubePos = cubes[0]->transform->position;

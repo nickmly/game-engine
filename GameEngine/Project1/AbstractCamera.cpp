@@ -1,4 +1,7 @@
 #include "AbstractCamera.h"
+#include <stdio.h>
+#include <iostream>
+#include <gtx/euler_angles.hpp>
 
 glm::vec3 AbstractCamera::UP = glm::vec3(0, 1, 0);
 
@@ -26,8 +29,22 @@ void AbstractCamera::Rotate(const float y, const float p, const float r)
 	yaw = glm::radians(y);
 	pitch = glm::radians(p);
 	roll = glm::radians(r);
-	Update();
 }
+
+glm::vec3 AbstractCamera::LookAt(const glm::vec3 &target)
+{
+	glm::mat4 camYPR = glm::yawPitchRoll(-yaw, pitch, 0.0f);
+
+	position += translation;
+
+	look = glm::normalize(target - position);			// Sets look vec to the normalized direction vec between cam position and target
+	up = glm::vec3(camYPR * glm::vec4(0, 1, 0, 0));		// New YPR * up vector 
+	right = glm::cross(look, up);						// Horizontal axis will be cross between look and up
+
+	ViewMatrix = glm::lookAt(position, target, up);		// Update ViewMatrix
+	return glm::vec3(yaw, pitch, roll);
+}
+
 
 const glm::mat4 AbstractCamera::GetViewMatrix() const
 {

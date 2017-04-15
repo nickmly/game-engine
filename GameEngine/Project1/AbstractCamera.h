@@ -13,6 +13,7 @@ public:
 	virtual void Update() = 0;
 	virtual void Rotate(const float yaw, const float pitch, const float roll);
 
+	virtual glm::vec3 LookAt(const glm::vec3 &_position);
 	//Frustum Variables
 	//void CalcFrustumPlanes();
 	//bool IsPointInFrustum(const glm::vec3& point);
@@ -24,7 +25,7 @@ public:
 	//glm::vec3 farPts[4];
 	//glm::vec3 nearPts[4];
 
-protected:
+public:
 	//camera settings
 	float yaw, pitch, roll, fov, aspect_ratio, Znear, Zfar; 
 	
@@ -61,5 +62,8 @@ public:
 	virtual void Walk(float dist) = 0;
 	virtual void Strafe(float dist) = 0;
 	virtual void Lift(float dist) = 0;
+
+protected:
+	glm::vec3 translation;
 };
 

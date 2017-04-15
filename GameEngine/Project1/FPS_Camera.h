@@ -23,7 +23,7 @@ public:
 
 protected:
 	float speed;
-	glm::vec3 translation;
+
 
 
 public: //ACCESSORS MUTATORS

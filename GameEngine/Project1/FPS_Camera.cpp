@@ -1,6 +1,6 @@
 #include "FPS_Camera.h"
 
-
+#include <iostream>
 
 FPS_Camera::FPS_Camera()
 {
@@ -15,7 +15,7 @@ FPS_Camera::~FPS_Camera()
 void FPS_Camera::Update()
 {
 	//reference current YPR
-	glm::mat4 YPR = glm::yawPitchRoll(yaw, pitch, roll);
+	glm::mat4 YPR = glm::yawPitchRoll(-yaw, pitch, roll);
 
 	//update position by adding change in translation
 	position += translation;
@@ -30,6 +30,7 @@ void FPS_Camera::Update()
 	//target is set from adding the position to where we want to look 
 	glm::vec3 target = position + look;
 
+	//std::cout << target << std::endl;
 	//Update View Matrix
 	ViewMatrix = glm::lookAt(position, target, up);
 
@@ -38,7 +39,7 @@ void FPS_Camera::Update()
 void FPS_Camera::Walk(const float _distance)
 {
 	//uses look as the direction to translate
-	translation += (look*speed*_distance);
+	translation += (look * speed * _distance);
 	Update();
 	translation = glm::vec3(0.0f);
 }
