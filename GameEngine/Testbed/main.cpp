@@ -26,6 +26,7 @@
 #include "Light.h"
 #include "PhysicsWorld.h"
 #include "BulletRigidbody.h"
+#include "Skybox.h"
 
 
 const char* TITLE = "Window Title";
@@ -50,10 +51,12 @@ btDefaultMotionState* fallState;
 BulletRigidbody* groundRb;
 BulletRigidbody* fallRb;
 
+Skybox* skybox;
+
 void initTTF()
 {
 	TTF_Init();
-	
+
 
 }
 
@@ -70,7 +73,7 @@ void initPhysicsSim()
 }
 
 void quitGame()
-{	
+{
 	TTF_Quit();
 	window->~Window();
 	delete world;
@@ -114,7 +117,7 @@ void renderText(char* text)
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexImage2D(GL_TEXTURE_2D, 0, colors, surf->w, surf->h, 0, GL_BGRA, GL_UNSIGNED_BYTE, surf->pixels);
-	
+
 	const GLfloat quadVertices[] = { -1.0f, 1.0f, 0.0f,
 		1.0f, 1.0f, 0.0f,
 		1.0f,-1.0f, 0.0f,
@@ -123,27 +126,27 @@ void renderText(char* text)
 
 	glVertexPointer(3, GL_FLOAT, 0, quadVertices);
 	glDrawArrays(GL_QUADS, 0, 4);
-	
+
 	TTF_CloseFont(font);
 	SDL_FreeSurface(surf);
 }
 
 InputManager* inputManager = InputManager::GetInstance();
-int main(int argc, char** argv) 
-{		
+int main(int argc, char** argv)
+{
 	bool focusOnMouse = true;
 	initPhysicsSim();
 
 	window = new Window(TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, true);
 
-	glm::vec3 camRotation = glm::vec3(0.0f);	
+	glm::vec3 camRotation = glm::vec3(0.0f);
 
 	OpenGLRenderer renderer;
 	Clock clock;
 
 	FPS_Camera* fpsCamera = new FPS_Camera();
 	fpsCamera->SetupProjection(120.0f, SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 1000.0f);
-	fpsCamera->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));	
+	fpsCamera->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 
 	Shader modelShader = Shader(FileReader::ReadFromFile("Shaders/modelShaderVertex.glsl").c_str(), FileReader::ReadFromFile("Shaders/modelShaderFrag.glsl").c_str());
 	Shader lampShader = Shader(FileReader::ReadFromFile("Shaders/modelShaderVertex.glsl").c_str(), FileReader::ReadFromFile("Shaders/modelShaderFrag_NoLight.glsl").c_str());
@@ -157,18 +160,18 @@ int main(int argc, char** argv)
 		cubes[i] = new GameObject();
 		cubes[i]->AddComponent(new Model("Models/cube.obj", modelShader, fpsCamera, cubes[i]->transform));
 		//Model* cubeModel = cubes[i]->GetComponent<Model>();
-		fallRb = new BulletRigidbody(fallShape, btVector3(0, 50 + (i * 2), 0), btQuaternion(0, 0, 0, 1), 1.0f);	
+		fallRb = new BulletRigidbody(fallShape, btVector3(0, 50 + (i * 2), 0), btQuaternion(0, 0, 0, 1), 1.0f);
 		cubes[i]->AddComponent(fallRb);
 		world->AddRigidbody(cubes[i]->GetComponent<BulletRigidbody>()->GetBtRigidbody());
 	}
-	
+
 
 	skull->AddComponent(new Model("Models/nanosuit/nanosuit.obj", modelShader, fpsCamera, skull->transform));
 	Model* model = skull->GetComponent<Model>();
 
-	skull->transform->SetPosition(glm::vec3(0.0f, -5.0f, 10.0f));	
+	skull->transform->SetPosition(glm::vec3(0.0f, -5.0f, 10.0f));
 
-	
+
 	GameObject* lamp = new GameObject();
 	lamp->AddComponent(new Model("Models/lamp.obj", lampShader, fpsCamera, lamp->transform));
 
@@ -179,7 +182,7 @@ int main(int argc, char** argv)
 		glm::vec3(0.25f)
 	);
 
-	sunLight.direction = glm::vec4(-0.2f, -1.0f, -0.3f, 1.0f); 
+	sunLight.direction = glm::vec4(-0.2f, -1.0f, -0.3f, 1.0f);
 
 	Light pointLight1 = Light(glm::vec3(0.0f, 20.0f, 20.0f), glm::vec3(10.0f), glm::vec3(100.0f, 0.0f, 0.0f), glm::vec3(0.1f));
 	pointLight1.constant = 1.0f;
@@ -195,7 +198,17 @@ int main(int argc, char** argv)
 	std::vector<Light> lights;
 	lights.push_back(pointLight1);
 	lights.push_back(pointLight2);
-	
+
+
+	std::vector<char*> images;
+	images.push_back("Textures/Right_MauveSpaceBox.png");
+	images.push_back("Textures/Left_MauveSpaceBox.png");
+	images.push_back("Textures/Up_MauveSpaceBox.png");
+	images.push_back("Textures/Down_MauveSpaceBox.png");
+	images.push_back("Textures/Back_MauveSpaceBox.png");
+	images.push_back("Textures/Front_MauveSpaceBox.png");
+	skybox = new Skybox(images);
+
 	renderer.Enable();
 
 	SDL_Event windowEvent;
@@ -212,32 +225,33 @@ int main(int argc, char** argv)
 			if (windowEvent.type == SDL_QUIT)
 				break;
 			inputManager->prevKeyEvent = inputManager->currentKeyEvent;
-			inputManager->currentKeyEvent = windowEvent.key;		
+			inputManager->currentKeyEvent = windowEvent.key;
 			if (windowEvent.type == SDL_KEYDOWN)
 			{
 				if (windowEvent.key.keysym.sym == SDLK_ESCAPE)
-					break;			
+					break;
 			}
 
-	
-				if (windowEvent.type == SDL_MOUSEMOTION)
-				{
-					mouseX = windowEvent.motion.xrel;
-					mouseY = windowEvent.motion.yrel;
 
-					camRotation.x += mouseX * 4.0f * clock.GetDeltaTime();
-					camRotation.y += mouseY * 4.0f * clock.GetDeltaTime();
-				}
-				
+			if (windowEvent.type == SDL_MOUSEMOTION)
+			{
+				mouseX = windowEvent.motion.xrel;
+				mouseY = windowEvent.motion.yrel;
+
+				camRotation.x += mouseX * 4.0f * clock.GetDeltaTime();
+				camRotation.y += mouseY * 4.0f * clock.GetDeltaTime();
+			}
+
 		}
 		//
 
 		// Game loop
 		renderer.PreRender();
+		skybox->Render(fpsCamera);
 		renderer.Render();
 
-	
-	/////Camera Target
+
+		/////Camera Target
 		if (focusOnMouse) {
 			fpsCamera->Rotate(camRotation.x, camRotation.y, camRotation.z);
 		}
@@ -254,20 +268,22 @@ int main(int argc, char** argv)
 			focusOnMouse = true;
 		}
 		fpsCamera->Update();
-	//////////////////////
-
-		model->Render(sunLight,lights);
-		skull->transform->Rotate(glm::vec3(0.0f, clock.GetDeltaTime(), 0.0f));
+		//////////////////////
 		
+
+
+		model->Render(sunLight, lights);
+		skull->transform->Rotate(glm::vec3(0.0f, clock.GetDeltaTime(), 0.0f));
+
 		lamp->GetComponent<Model>()->Render(sunLight, lights);
 
 		for (int i = 0; i < NUM_OF_BOXES; i++)
 		{
 			cubes[i]->GetComponent<Model>()->Render(sunLight, lights);
 		}
-		
+
 		//Bullet
-		world->Step(clock.GetDeltaTime(), 10);			
+		world->Step(clock.GetDeltaTime(), 10);
 		//
 
 		skull->Update((float)clock.GetDeltaTime());
@@ -292,7 +308,7 @@ int main(int argc, char** argv)
 		}
 
 		if (inputManager->IsKeyDown(SDLK_KP_8)) {
-		
+
 			lights[0].position.y += 10.0f * clock.GetDeltaTime();
 			lights[1].position.y += 10.0f * clock.GetDeltaTime();
 			lamp->transform->SetPosition(lights[0].position);
@@ -346,7 +362,7 @@ int main(int argc, char** argv)
 			for (int i = 0; i < NUM_OF_BOXES; i++)
 			{
 				cubes[i]->GetComponent<BulletRigidbody>()->ApplyForce(btVector3(i, 10, 0));
-			}			
+			}
 		}
 
 
@@ -363,17 +379,18 @@ int main(int argc, char** argv)
 		//
 
 		window->Refresh();
-		
+
 	}
 
 	for (int i = 0; i < NUM_OF_BOXES; i++)
 	{
 		delete cubes[i];
 	}
+	delete skybox;
 	delete skull;
 	delete model;
 	delete fpsCamera;
 	quitGame();
-	
+
 	return 0;
 }
