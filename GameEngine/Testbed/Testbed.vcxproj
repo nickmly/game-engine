@@ -127,6 +127,7 @@
   <ItemGroup>
     <None Include="Shaders\modelShaderFrag.glsl" />
     <None Include="Shaders\modelShaderFrag_NoLight.glsl" />
+    <None Include="Shaders\modelShaderFrag_Refraction.glsl" />
     <None Include="Shaders\modelShaderVertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

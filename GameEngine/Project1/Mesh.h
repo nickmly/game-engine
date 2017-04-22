@@ -33,7 +33,7 @@ public:
 	GLuint VAO, VBO, EBO;
 	GLuint modelHandle, viewHandle, projHandle;
 	FPS_Camera* camera;
-	void Render(Transform transform, Light dirLight, std::vector<Light> lights);
+	void Render(Transform transform, Light dirLight, std::vector<Light> lights, GLuint skyboxTexture);
 	Mesh(std::vector<Vertex> _vertices, std::vector<unsigned int> _indices, std::vector<Texture> _textures, Shader _shader, FPS_Camera* _camera);
 
 	~Mesh();

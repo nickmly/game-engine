@@ -29,5 +29,8 @@
     <None Include="Shaders\modelShaderFrag_NoLight.glsl">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="Shaders\modelShaderFrag_Refraction.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

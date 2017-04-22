@@ -66,7 +66,7 @@ void initPhysicsSim()
 	world = new PhysicsWorld();
 
 	groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1);
-	fallShape = new btBoxShape(btVector3(1, 1, 1));
+	fallShape = new btBoxShape(btVector3(1.25, 1.25, 1.25));
 
 	groundRb = new BulletRigidbody(groundShape, btVector3(0, -1, 0), btQuaternion(0, 0, 0, 1), 0.0f);
 	world->AddRigidbody(groundRb->GetBtRigidbody());
@@ -148,7 +148,7 @@ int main(int argc, char** argv)
 	fpsCamera->SetupProjection(120.0f, SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 1000.0f);
 	fpsCamera->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 
-	Shader modelShader = Shader(FileReader::ReadFromFile("Shaders/modelShaderVertex.glsl").c_str(), FileReader::ReadFromFile("Shaders/modelShaderFrag.glsl").c_str());
+	Shader modelShader = Shader(FileReader::ReadFromFile("Shaders/modelShaderVertex.glsl").c_str(), FileReader::ReadFromFile("Shaders/modelShaderFrag_Refraction.glsl").c_str());
 	Shader lampShader = Shader(FileReader::ReadFromFile("Shaders/modelShaderVertex.glsl").c_str(), FileReader::ReadFromFile("Shaders/modelShaderFrag_NoLight.glsl").c_str());
 	GameObject* skull = new GameObject();
 	skull->transform->SetPosition(glm::vec3(0.0, 0.0f, 0.0f));
@@ -166,7 +166,7 @@ int main(int argc, char** argv)
 	}
 
 
-	skull->AddComponent(new Model("Models/nanosuit/nanosuit.obj", modelShader, fpsCamera, skull->transform));
+	skull->AddComponent(new Model("Models/police_officer.obj", modelShader, fpsCamera, skull->transform));
 	Model* model = skull->GetComponent<Model>();
 
 	skull->transform->SetPosition(glm::vec3(0.0f, -5.0f, 10.0f));
@@ -272,14 +272,14 @@ int main(int argc, char** argv)
 		
 
 
-		model->Render(sunLight, lights);
+		model->Render(sunLight, lights, skybox->textureID);
 		skull->transform->Rotate(glm::vec3(0.0f, clock.GetDeltaTime(), 0.0f));
 
-		lamp->GetComponent<Model>()->Render(sunLight, lights);
+		lamp->GetComponent<Model>()->Render(sunLight, lights, skybox->textureID);
 
 		for (int i = 0; i < NUM_OF_BOXES; i++)
 		{
-			cubes[i]->GetComponent<Model>()->Render(sunLight, lights);
+			cubes[i]->GetComponent<Model>()->Render(sunLight, lights, skybox->textureID);
 		}
 
 		//Bullet
@@ -358,10 +358,10 @@ int main(int argc, char** argv)
 			lights[0].diffuse = glm::vec3(100.0f, 0.0f, 0.0f);
 		}
 		if (inputManager->IsKeyDown(SDLK_SPACE))
-		{
+		{			
 			for (int i = 0; i < NUM_OF_BOXES; i++)
 			{
-				cubes[i]->GetComponent<BulletRigidbody>()->ApplyForce(btVector3(i, 10, 0));
+				cubes[i]->GetComponent<BulletRigidbody>()->ApplyTorque(btVector3(0, i * 15, 0));
 			}
 		}
 

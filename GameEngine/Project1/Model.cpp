@@ -23,12 +23,12 @@ Model::~Model()
 {
 }
 
-void Model::Render(Light dirLight, std::vector<Light> lights)
+void Model::Render(Light dirLight, std::vector<Light> lights, GLuint skyboxTexture)
 {
 	for (GLuint i = 0; i < meshes.size(); i++)
 	{
 		shader.Use();
-		meshes[i].Render(*transform, dirLight, lights);
+		meshes[i].Render(*transform, dirLight, lights, skyboxTexture);
 	}
 }
 

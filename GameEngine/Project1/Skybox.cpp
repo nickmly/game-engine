@@ -1,13 +1,13 @@
 #include "Skybox.h"
 
-#include <GL/glew.h>
+
 #include <SOIL.h>
 #include <gtc/type_ptr.hpp>
 
 #include "Shader.h"
 #include "FileReader.h"
 
-GLuint textureID;
+
 GLfloat skyboxVertices[] = {
 	// Positions          
 	-1.0f,  1.0f, -1.0f,

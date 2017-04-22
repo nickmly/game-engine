@@ -70,8 +70,9 @@ void Mesh::SetupMesh()
 
 
 // TODO: Find better way to pass lights through to this
-void Mesh::Render(Transform transform, Light dirLight, std::vector<Light> lights)
+void Mesh::Render(Transform transform, Light dirLight, std::vector<Light> lights, GLuint skyboxTexture)
 {
+
 	// Bind appropriate textures
 	GLuint diffuseNr = 1;
 	GLuint specularNr = 1;
@@ -140,6 +141,13 @@ void Mesh::Render(Transform transform, Light dirLight, std::vector<Light> lights
 
 	// Draw mesh
 	glBindVertexArray(VAO);
+
+	//Refraction
+	glActiveTexture(GL_TEXTURE3); // We already have 3 texture units active (in this shader) so set the skybox as the 4th texture unit (texture units are 0 based so index number 3)
+	glUniform1i(glGetUniformLocation(shader.GetProgram(), "skybox"), 3);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+	//
+
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 

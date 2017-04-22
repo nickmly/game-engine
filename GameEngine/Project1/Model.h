@@ -41,7 +41,7 @@ public:
 	std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
 	GLint TextureFromFile(const char* path, std::string directory);
 
-	void Render(Light dirLight, std::vector<Light> lights);
+	void Render(Light dirLight, std::vector<Light> lights, GLuint skyboxTexture);
 	virtual void Update(float deltaTime) override;
 	Model() {};
 	Model(char* path, Shader _shader, FPS_Camera* _cam, Transform *_transform);
