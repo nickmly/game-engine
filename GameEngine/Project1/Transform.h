@@ -20,6 +20,8 @@ public:
 	~Transform();
 	void SetPosition(glm::vec3 _pos);
 	void Translate(glm::vec3 _stepPos);
+	void SetRotationMatrix(glm::mat4 mat);
+	void SetRotation(glm::vec3 _rot);
 	void Rotate(glm::vec3 _stepRot);
 	void Scale(glm::vec3 _stepScale);
 

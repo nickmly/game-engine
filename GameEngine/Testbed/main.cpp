@@ -166,7 +166,7 @@ int main(int argc, char** argv)
 	}
 
 
-	skull->AddComponent(new Model("Models/police_officer.obj", modelShader, fpsCamera, skull->transform));
+	skull->AddComponent(new Model("Models/nanosuit/nanosuit.obj", modelShader, fpsCamera, skull->transform));
 	Model* model = skull->GetComponent<Model>();
 
 	skull->transform->SetPosition(glm::vec3(0.0f, -5.0f, 10.0f));

@@ -22,9 +22,24 @@ void Transform::Translate(glm::vec3 _stepPos)
 	UpdateMatrix();
 }
 
+void Transform::SetRotationMatrix(glm::mat4 mat)
+{
+	rotateMat = mat;
+	UpdateMatrix();
+}
+
+void Transform::SetRotation(glm::vec3 _rot)
+{
+	rotation = _rot;
+	rotateMat = glm::rotate(rotateMat, _rot.x - rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+	rotateMat = glm::rotate(rotateMat, _rot.y - rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+	rotateMat = glm::rotate(rotateMat, _rot.z - rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+	UpdateMatrix();
+}
+
 void Transform::Rotate(glm::vec3 _stepRot)
 {
-	rotation = _stepRot;
+	rotation += _stepRot;
 	rotateMat = glm::rotate(rotateMat, _stepRot.x, glm::vec3(1.0f, 0.0f, 0.0f));
 	rotateMat = glm::rotate(rotateMat, _stepRot.y, glm::vec3(0.0f, 1.0f, 0.0f));
 	rotateMat = glm::rotate(rotateMat, _stepRot.z, glm::vec3(0.0f, 0.0f, 1.0f));

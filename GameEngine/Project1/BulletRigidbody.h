@@ -23,11 +23,13 @@ public:
 	btVector3 GetPosition();
 	btVector3 GetCenterOfMass();
 
-
+	void ApplyTorque(const btVector3 &torque);
+	void ApplyTorqueImpulse(const btVector3 &torque);
 	void ApplyForce(const btVector3 &force);
 	void ApplyForce(const btVector3 &force, const btVector3 &relativePos);
 	void ApplyImpulse(const btVector3 &impulse);
 	void ApplyImpulse(const btVector3 &impulse, const btVector3 &relativePos);
+
 
 	btVector3 ConvertVectorToBT(glm::vec3 _vec);
 	glm::vec3 ConvertVectorToGLM(const btVector3 &_vec);
